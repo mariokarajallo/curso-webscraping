@@ -105,3 +105,20 @@ JavaScript error: resource:///actors/LightweightThemeChild.jsm, line 38: TypeErr
 JavaScript error: resource:///actors/LightweightThemeChild.jsm, line 38: TypeError: this.browsingContext.topChromeWindow is null
 JavaScript error: resource:///actors/LightweightThemeChild.jsm, line 38: TypeError: this.browsingContext.topChromeWindow is null
 1667954825591	Marionette	INFO	Stopped listening on port 58955
+1668024054125	geckodriver	INFO	Listening on 127.0.0.1:53736
+1668024057307	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-private" "--remote-debugging-port" "53737" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\mario\\AppData\\Local\\Temp\\rust_mozprofileYExIIO"
+1668024058344	Marionette	INFO	Marionette enabled
+1668024058352	Marionette	INFO	Listening on port 53756
+Read port: 53756
+WebDriver BiDi listening on ws://127.0.0.1:53737
+1668024058550	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\mario\\AppData\\Local\\Temp\\rust_mozprofileYExIIO\\search.json.mozlz4", (void 0)))
+JavaScript error: resource://gre/modules/XULStore.jsm, line 58: Error: Can't find profile directory.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 58: Error: Can't find profile directory.
+DevTools listening on ws://127.0.0.1:53737/devtools/browser/ca4ec4c1-c045-451d-a89c-6a12fa16b5d6
+JavaScript warning: https://www.latamairlines.com/V9Dy9F/D2ld/ls/1xjL/_y5oeKOh/3t3bDtGL/MipNNQ/ezV/cDjoCBGcB, line 1: unreachable code after return statement
+JavaScript warning: https://www.latamairlines.com/V9Dy9F/D2ld/ls/1xjL/_y5oeKOh/3t3bDtGL/MipNNQ/ezV/cDjoCBGcB, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://www.latamairlines.com/V9Dy9F/D2ld/ls/1xjL/_y5oeKOh/3t3bDtGL/MipNNQ/ezV/cDjoCBGcB, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: , line 0: InvalidStateError: A mutation operation was attempted on a database that did not allow mutations.
+JavaScript warning: https://www.gfl85trk.com/scripts/sdk/everflow.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://www.gfl85trk.com/scripts/sdk/everflow.js, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
