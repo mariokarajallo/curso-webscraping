@@ -9,7 +9,7 @@ class Spider12(scrapy.Spider):
     # permite configurar el archivo de salida
     custom_settings = {
         'FEEDS': {
-                'pagina12.json': {
+                'pagina12dic.json': {
                     'format': 'json',
                     'encoding': 'UTF-8',
                 },
@@ -46,18 +46,26 @@ class Spider12(scrapy.Spider):
         #     yield response.follow(nota_promocionada, self.parse_nota)
 
         # lista de todas las notas no procionadas
+        urls=[]
         notas = response.xpath(
             '//section[@class="list-content"]//h3//a/@href|//section[@class="list-content"]//h4//a/@href').getall()
         for nota in notas:
-            print('Pagina deportes')
+            # print('Pagina deportes')
             # nota = urljoin(url_base, nota)
-            yield response.follow(nota, self.parse_nota)
+            # print(f' estoy aca {nota}')
+            urls.append('https://www.pagina12.com.ar'+nota)
+        
+        # print ('easte es el dic url ',urls)
+        
+        for i in urls:
+            # print('URL: ',i)
+            yield response.follow(i)
 
         # link siguiente paguina
-        next_page_url = response.xpath(
-            '//div[@class="articles-list-pager"]//a[@class="next"]/@href').get()
-        if next_page_url:
-            yield response.follow(f'https://www.pagina12.com.ar/{next_page_url}', self.parse)
+        # next_page_url = response.xpath(
+        #     '//div[@class="articles-list-pager"]//a[@class="next"]/@href').get()
+        # if next_page_url:
+        #     yield response.follow(f'https://www.pagina12.com.ar/{next_page_url}', self.parse)
 
     def parse_nota(self, response):
         # extraemos el titulo de la nota

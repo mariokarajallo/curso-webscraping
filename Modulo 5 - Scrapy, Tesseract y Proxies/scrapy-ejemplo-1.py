@@ -12,7 +12,7 @@ class Spider12(scrapy.Spider):
     allowed_domains=['paginas12.com.ar']
     #fomato que queremos nos genere el archivo de salida
     #permite configurar el archivo de salida
-    custom_setting={
+    custom_settings={
         'FEEDS': {
                 'notas_pagina12.json': {
                     'format': 'json',
