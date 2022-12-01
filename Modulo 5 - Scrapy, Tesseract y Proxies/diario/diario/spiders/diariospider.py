@@ -14,7 +14,7 @@ class Spider12(scrapy.Spider):
                     'encoding': 'UTF-8',
                 },
         },
-        'DEPTH_LIMIT': 2,
+        # 'DEPTH_LIMIT': 2,
     }
     # definimos URLS de INICIO
     # URLs para comenzar a rastrear
@@ -27,6 +27,10 @@ class Spider12(scrapy.Spider):
     '''
     el rastreador llama a este método de callback, pasándole los objetos de respuesta de las páginas como argumento. En el método parse nos encargaremos de extraer la información que queramos de cada URL mediante expresiones XPaths, expresiones regurales (REgex) o selectores CSS.
     '''
+    def parse_notas(self, response):
+        print('-------------------')
+        print(response.url)
+        print('-------------------')
 
     def parse(self, response):
         # url base
@@ -55,11 +59,11 @@ class Spider12(scrapy.Spider):
             # print(f' estoy aca {nota}')
             urls.append('https://www.pagina12.com.ar'+nota)
         
-        # print ('easte es el dic url ',urls)
+        print ('dic url ',urls)
         
         for i in urls:
             # print('URL: ',i)
-            yield response.follow(i)
+            yield response.follow(i, callback=self.parse_notas)
 
         # link siguiente paguina
         # next_page_url = response.xpath(
@@ -67,16 +71,19 @@ class Spider12(scrapy.Spider):
         # if next_page_url:
         #     yield response.follow(f'https://www.pagina12.com.ar/{next_page_url}', self.parse)
 
-    def parse_nota(self, response):
-        # extraemos el titulo de la nota
-        titulo = response.xpath('//article/div[1]/div[2]/h1/text()').get()
-        # extraemos la fecha de la nota
-        fecha = response.xpath(
-            '//article/div[2]/div[1]/div/div[1]/span/time/text()').get()
+    
 
-        yield {'url': response.url,
-               'titulo': titulo,
-               'fecha': fecha}
+
+    # def parse_nota(self, response):
+    #     # extraemos el titulo de la nota
+    #     titulo = response.xpath('//article/div[1]/div[2]/h1/text()').get()
+    #     # extraemos la fecha de la nota
+    #     fecha = response.xpath(
+    #         '//article/div[2]/div[1]/div/div[1]/span/time/text()').get()
+
+    #     yield {'url': response.url,
+    #            'titulo': titulo,
+    #            'fecha': fecha}
 
 # process = CrawlerProcess()
 # process.crawl(Spider12)
