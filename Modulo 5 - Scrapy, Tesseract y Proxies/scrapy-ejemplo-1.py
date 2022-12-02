@@ -21,7 +21,6 @@ class Spider12(scrapy.Spider):
                 },
         },
         'DEPTH_LIMIT': 2,
-        'FEED_EXPORT_ENCODING': 'utf-8'
     }   
     # definimos URLS de INICIO
     # URLs para comenzar a rastrear
