@@ -18,7 +18,8 @@ class Spider12(scrapy.Spider):
     }
     # definimos URLS de INICIO
     # URLs para comenzar a rastrear
-    start_urls = ['https://www.pagina12.com.ar/secciones/deportes']
+    # start_urls = ['https://www.pagina12.com.ar/secciones/deportes']
+    start_urls = 'https://www.pagina12.com.ar/secciones/deportes'
 
     '''
     Nuestra araña ya tiene un método start_requests() implementado por defecto, que se encarga de generar una respuesta por cada una de estas URLs y de enviarla al método callback por defecto denominado parse.
