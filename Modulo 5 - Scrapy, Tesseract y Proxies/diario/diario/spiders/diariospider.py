@@ -29,6 +29,8 @@ class Spider12(scrapy.Spider):
     '''
     el rastreador llama a este método de callback, pasándole los objetos de respuesta de las páginas como argumento. En el método parse nos encargaremos de extraer la información que queramos de cada URL mediante expresiones XPaths, expresiones regurales (REgex) o selectores CSS.
     '''
+
+    
     def parse_notas(self, response):
         print('-------------------')
         print(response.url)
