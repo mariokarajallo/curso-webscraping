@@ -20,5 +20,5 @@ class OpenwebinarspiderSpider(scrapy.Spider):
         current_page = int(current_url[index:])
 
         if current_page < ultima_pagina:
-            print(f'PAGINA ACTUAL {current_page}')
+            print(f'Pagina actual {current_page}')
             yield response.follow(f'{base_url}{current_page+1}')
