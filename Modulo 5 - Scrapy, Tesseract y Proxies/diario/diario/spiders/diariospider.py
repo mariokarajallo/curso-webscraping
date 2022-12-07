@@ -25,7 +25,6 @@ class Spider12(scrapy.Spider):
     '''
     Nuestra araña ya tiene un método start_requests() implementado por defecto, que se encarga de generar una respuesta por cada una de estas URLs y de enviarla al método callback por defecto denominado parse.
     '''
-
     '''
     el rastreador llama a este método de callback, pasándole los objetos de respuesta de las páginas como argumento. En el método parse nos encargaremos de extraer la información que queramos de cada URL mediante expresiones XPaths, expresiones regurales (REgex) o selectores CSS.
     '''    
