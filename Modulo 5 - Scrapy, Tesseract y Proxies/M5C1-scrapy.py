@@ -16,6 +16,7 @@ class Spider12(scrapy.Spider):
         },
         'DEPTH_LIMIT': 2,
     }
+    
     # definimos URLS de INICIO
     # URLs para comenzar a rastrear
     start_urls = ['https://www.pagina12.com.ar/secciones/deportes']
