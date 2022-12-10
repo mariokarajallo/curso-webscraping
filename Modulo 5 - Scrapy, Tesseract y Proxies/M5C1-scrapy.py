@@ -1,5 +1,6 @@
 import scrapy
 
+
 class Spider12(scrapy.Spider):
     # nombre del scraper nombre igual a la clase, nombre de nuestra araña.
     name = 'spiderpagina12'
@@ -9,14 +10,14 @@ class Spider12(scrapy.Spider):
     # permite configurar el archivo de salida
     custom_settings = {
         'FEEDS': {
-                'pagina12.json': {
-                    'format': 'json',
-                    'encoding': 'UTF-8',
-                },
+            'pagina12.json': {
+                'format': 'json',
+                'encoding': 'UTF-8',
+            },
         },
         'DEPTH_LIMIT': 2,
     }
-    
+
     # definimos URLS de INICIO
     # URLs para comenzar a rastrear
     start_urls = ['https://www.pagina12.com.ar/secciones/deportes']
@@ -67,9 +68,7 @@ class Spider12(scrapy.Spider):
         fecha = response.xpath(
             '//article/div[2]/div[1]/div/div[1]/span/time/text()').get()
 
-        yield {'url': response.url,
-               'titulo': titulo,
-               'fecha': fecha}
+        yield {'url': response.url, 'titulo': titulo, 'fecha': fecha}
 
 # process = CrawlerProcess()
 # process.crawl(Spider12)
