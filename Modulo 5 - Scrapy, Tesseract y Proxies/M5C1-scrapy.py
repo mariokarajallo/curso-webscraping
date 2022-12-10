@@ -48,6 +48,7 @@ class Spider12(scrapy.Spider):
         #     yield response.follow(nota_promocionada, self.parse_nota)
 
         # lista de todas las notas no procionadas
+        
         notas = response.xpath(
             '//section[@class="list-content"]//h3//a/@href|//section[@class="list-content"]//h4//a/@href').getall()
         for nota in notas:
