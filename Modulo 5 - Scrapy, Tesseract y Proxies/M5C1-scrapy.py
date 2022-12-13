@@ -56,7 +56,6 @@ class Spider12(scrapy.Spider):
             # nota = urljoin(url_base, nota)
             yield response.follow(nota, self.parse_nota)
 
-
         # link siguiente paguina
         next_page_url = response.xpath(
             '//div[@class="articles-list-pager"]//a[@class="next"]/@href').get()
