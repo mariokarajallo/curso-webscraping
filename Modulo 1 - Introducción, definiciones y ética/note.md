@@ -1,8 +1,8 @@
 
 - Modulo I - Introducción, definiciones y ética
-    - [Clase 1 Introducción y definiciones](#clase-1-introducción-y-definiciones)
-    - [Clase 2 Ética y Legalidad](#ética-y-legalidad)
-    - [Clase 3 Configuración del entorno de trabajo con Jupyter](#configuración-del-entorno-de-trabajo-con-jupyter)
+    - [Clase 1 Introducción y definiciones](#1-introducción-y-definiciones)
+    - [Clase 2 Ética y Legalidad](#2-ética-y-legalidad)
+    - [Clase 3 Configuración del entorno de trabajo con Jupyter](#3-configuración-del-entorno-de-trabajo-con-jupyter)
 
 
 
