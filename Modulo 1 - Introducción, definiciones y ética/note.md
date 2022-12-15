@@ -1,8 +1,9 @@
+# Curso de Web Scraping: Extracción de Datos en la Web
 
-- Modulo I - Introducción, definiciones y ética
-    - [Clase 1 Introducción y definiciones](#1-introducción-y-definiciones)
-    - [Clase 2 Ética y Legalidad](#2-ética-y-legalidad)
-    - [Clase 3 Configuración del entorno de trabajo con Jupyter](#3-configuración-del-entorno-de-trabajo-con-jupyter)
+## Modulo I - Introducción, definiciones y ética
+- [Clase 1 Introducción y definiciones](#1-introducción-y-definiciones)
+- [Clase 2 Ética y Legalidad](#2-ética-y-legalidad)
+- [Clase 3 Configuración del entorno de trabajo con Jupyter](#3-configuración-del-entorno-de-trabajo-con-jupyter)
 
 
 
@@ -159,6 +160,4 @@ Nos permite encapsular un proyecto para poder instalar las versiones de los paqu
 **Lecturas Recomendadas**
 
 - Un tutorial básico y sencillo de entender para Jupyter: [https://www.adictosaltrabajo.com/2018/01/18/primeros-pasos-con-jupyter-notebook/](https://www.adictosaltrabajo.com/2018/01/18/primeros-pasos-con-jupyter-notebook/)
-- Tambien se pueden usar Google Colab para las notebooks.
-
-[https://colab.research.google.com/](https://colab.research.google.com/)
+- Tambien se pueden usar Google Colab para las notebooks: [https://colab.research.google.com/](https://colab.research.google.com/)
