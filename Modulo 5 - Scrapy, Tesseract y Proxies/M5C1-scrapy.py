@@ -64,6 +64,7 @@ class Spider12(scrapy.Spider):
         if next_page_url:
             yield response.follow(f'https://www.pagina12.com.ar/{next_page_url}', self.parse)
 
+
     def parse_nota(self, response):
         # extraemos el titulo de la nota
         titulo = response.xpath('//article/div[1]/div[2]/h1/text()').get()
