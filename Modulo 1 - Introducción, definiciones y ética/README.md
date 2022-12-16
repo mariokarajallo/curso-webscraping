@@ -1,11 +1,9 @@
 # Curso de Web Scraping: Extracción de Datos en la Web
 
-## Modulo I - Introducción, definiciones y ética
+## **Modulo I - Introducción, definiciones y ética**
 - [Clase 1 Introducción y definiciones](#1-introducción-y-definiciones)
 - [Clase 2 Ética y Legalidad](#2-ética-y-legalidad)
 - [Clase 3 Configuración del entorno de trabajo con Jupyter](#3-configuración-del-entorno-de-trabajo-con-jupyter)
-
-
 
 
 # 1. **Introducción y definiciones**
@@ -16,7 +14,6 @@ Objetivo: Recopilar información almacenada en un servicio web.
 
 Aplicación: Productos, reseñas, noticias para hacer posteriormente un análisis.
 
----
 
 `Web Crawling`: Proceso de mapeo e indexación de páginas web para conocer su contenido
 
@@ -43,7 +40,7 @@ Aplicación: Conocer la estructura de la web con el fin de indexar en motores de
 
 # 2. **Ética y Legalidad**
 
-## **¿Es legal?**
+## ¿Es legal?
 Debemos hacernos las siguientes preguntas.
 >¿Estoy violando alguna reglamentación local?
 ¿Estoy violando los “Términos y Condiciones” del sitio?
@@ -75,11 +72,9 @@ crawl-delay: 30
 ```
 expresado en segundos, y usado en la colección de parámetros a la hora de hacer de sistematizar consultas (scraping) a un sitio web respetando la integridad de respuesta del servidor objetivo
 
-# 3. Configuración del entorno de trabajo con Jupyter
+# **3. Configuración del entorno de trabajo con Jupyter**
 
 ## Anaconda/Miniconda
-
-## Introducción
 
 La Distribución Anaconda es un paquete de software que cuenta con todo lo necesario para empezar a trabajar en Data Science utilizando Python (o R). Incluye la instalación del intérprete de Python con los  módulos externos más usados en Data Science y diversos entornos de desarrollo entre los que se encuentra Jupyter, el que usaremos durante el curso.
 
@@ -102,8 +97,8 @@ A continuación te detallo los pasos para que puedas instalar Anaconda en tu PC 
 7. Si quieres puedes instalar PyCharm, que lo usaremos brevemente en el curso, pero la mayor parte de las clases trabajaremos en otro entorno.
 8. Una vez instalado, verás esta pantalla con las opciones para acceder a algunos recursos oficiales y la documentación de Anaconda.
 9. ¡Listo! Una vez completada la instalación, podrás acceder al Anaconda Navigator y al Jupyter Notebook, el entorno de trabajo que usaremos en el curso.
+10. Tambien puedes probar la version de menos peso llamada **Miniconda**.
 
----
 
 ## Jupyter Notebook desde Visual Studio Code
 
@@ -118,7 +113,6 @@ Visual Code : [https://code.visualstudio.com/docs/python/data-science-tutorial](
 
 Instalaremos el plugins de Jupyter Noteboks, en el apartado de Extensiones
 
----
 
 ### Crear entorno virtual (Anaconda/Miniconda/VScode)
 
@@ -137,7 +131,6 @@ Instalaremos el plugins de Jupyter Noteboks, en el apartado de Extensiones
 6. Finalmente si quieren ver las librerías instaladas en su entorno pueden ejecutar el comando:
     1. Verificar que todo se instalo utilizando el comando `pip freeze`
 
----
 
 # Crear ambiente virtual con virtualenv
 
@@ -155,9 +148,8 @@ Nos permite encapsular un proyecto para poder instalar las versiones de los paqu
 5. Si queremos tener todos los paquetes agrupados y con su versión correspondiente, podemos hacer uso del archivo *requirements.txt* en donde colocaremos cada uno de los paquetes y que luego podremos instalar usando el siguiente comando: **pip install -r requirements.txt**
 6. Para desactivar → deactivate
 
----
 
-**Lecturas Recomendadas**
+## **Lecturas Recomendadas**
 
 - Un tutorial básico y sencillo de entender para Jupyter: [https://www.adictosaltrabajo.com/2018/01/18/primeros-pasos-con-jupyter-notebook/](https://www.adictosaltrabajo.com/2018/01/18/primeros-pasos-con-jupyter-notebook/)
 - Tambien se pueden usar Google Colab para las notebooks: [https://colab.research.google.com/](https://colab.research.google.com/)
