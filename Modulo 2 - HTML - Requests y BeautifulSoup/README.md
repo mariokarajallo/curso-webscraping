@@ -2,6 +2,7 @@
 
 ## **Modulo II - HTML: Requests y BeautifulSoup**
 - [Clase 4 Descargando una página web](#4-descargando-una-página-web)
+- [Clase 5 Parseando HTML con BeautifulSoup](#5-parseando-html-con-beautifulSoup)
 
 
 
@@ -91,3 +92,51 @@ p12.request.url
 - p12.headers // muestra el encabezado de la respuesta.
 - p12.request.headers // muestra el encabezado de la solicitud. El contenido de esta request avisa al servidor que se está utilizando requests en python y que no es un navegador convencional. Puede ser modificado.
 - p12-request.url // muestra la url a la que se le hizo la solicitud.
+
+# 5. Parseando HTML con BeautifulSoup
+
+Beautiful Soup es una librería Python que permite extraer información de contenido en formato HTML o XML. Para usarla, es necesario especificar un parser, que es responsable de transformar un documento HTML o XML en un árbol complejo de objetos Python. 
+
+Esto permite, por ejemplo, que podamos interactuar con los elementos de una página web como si estuviésemos utilizando las herramientas del desarrollador de un navegador.
+
+![m2c2-1](../img/m2c2-1.jpg)
+
+Luego de una breve introducción continuamos con la clase. Bien, ya obtuvimos el código HTML de la página en la clase anterior. 
+
+En esta clase veremos cómo extraer de él la información deseada.
+
+```python
+#Parseamos el codigo HTML
+# esta libreria nos permite extraer la informacion que para nosotros es de interes
+from bs4 import BeautifulSoup
+
+# separamos el texto largo en pequenas partes para poder identificar
+# s-> soup o sopa
+s = BeautifulSoup(p12.text, 'lxml')
+
+#para obtener/saber el tipo de dato de nuestra variable 
+type(s)
+
+#imprimir s con el metodo "prettify" de manera que tengas una nocion de como esta 
+# estructurada la pagina y poder ver de manera jerarquica el DOM
+print (s.prettify())
+
+# Buscamos un elemento con el metodo find()
+# BeatifulSoup nos devuelve el primer elemento que encuentra que coincida con el parametro
+s.find('ul')
+
+```
+
+Primer ejercicio: obtener un listado de links a las distintas secciones del diario.
+
+- DOM: estructura jerárquica, html
+- Usar el inspector de elementos para ver dónde se encuentra la información, ayudara a identificar los elementos que deseemos analizar.
+- Ojo cuando la página es responsive, debemos tener en cuenta tanto el diseño escritorio como mobil
+
+```python
+# Buscamos elementos especificos agregando atributos -> attrs
+# Al atributo le pasamos un diccionario {'nombre atributo':'valor que esperamos obtener'}
+# utilizamos el metodo find_all() -> para traer TODOS los elementos que coincidan con el parametro que estamos pasando -> 'li'
+s.find('ul',attrs={'class':'horizontal-list main-sections hide-on-dropdown'}).find_all('li')
+#como resultado nos devuelve una lista []
+```
