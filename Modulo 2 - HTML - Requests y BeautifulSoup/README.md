@@ -99,7 +99,7 @@ Beautiful Soup es una librería Python que permite extraer información de conte
 
 Esto permite, por ejemplo, que podamos interactuar con los elementos de una página web como si estuviésemos utilizando las herramientas del desarrollador de un navegador.
 
-![m2c2-1](../img/m2c2-1.jpg)
+<img src="./img/m2c2-1.jpg"/>
 
 Luego de una breve introducción continuamos con la clase. Bien, ya obtuvimos el código HTML de la página en la clase anterior. 
 
