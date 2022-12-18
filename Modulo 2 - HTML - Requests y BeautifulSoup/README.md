@@ -4,6 +4,7 @@
 - [Clase 4 Descargando una página web](#4-descargando-una-página-web)
 - [Clase 5 Parseando HTML con BeautifulSoup](#5-parseando-html-con-beautifulSoup)
 - [Clase 6 Extrayendo información](#6-extrayendo-información)
+- [Clase 7 Manejo de errores](#7-manejo-de-errores)
 
 
 
@@ -406,3 +407,5 @@ seccion.a.text
 ```
 
 Arroja el mismo tipo de dato str, quizá haya diferencia en tiempo de ejecución.
+
+# 7. Manejo de errores
