@@ -3,6 +3,7 @@
 ## **Modulo II - HTML: Requests y BeautifulSoup**
 - [Clase 4 Descargando una página web](#4-descargando-una-página-web)
 - [Clase 5 Parseando HTML con BeautifulSoup](#5-parseando-html-con-beautifulSoup)
+- [Clase 6 Extrayendo información](#6-extrayendo-información)
 
 
 
@@ -140,3 +141,268 @@ Primer ejercicio: obtener un listado de links a las distintas secciones del diar
 s.find('ul',attrs={'class':'horizontal-list main-sections hide-on-dropdown'}).find_all('li')
 #como resultado nos devuelve una lista []
 ```
+# 6. Extrayendo información
+Vamos a empezar a extraer información contenida en los tags. A veces puede ser el texto del tag o puede ser algún atributo
+
+>Función que recibe un objeto de BeautifulSoup de una página de una sección y devuelve una lista de URLs a las notas de esa sección
+
+```python
+# reto-extrayendo-informacion
+
+import requests
+from bs4 import BeautifulSoup
+# obtenemos la pagina de donde extraemos la informacion
+link_principal='https://www.pagina12.com.ar'
+pagina_principal = requests.get(link_principal)
+
+#parseamos la pagina
+soup = BeautifulSoup(pagina_principal.text, 'lxml')
+
+#lista vacia para links de notas de secciones
+URL=[]
+
+def obtener_notas(soup):
+    '''
+    Función que recibe un objeto de BeautifulSoup de una página de una sección 
+    y devuelve una lista de URLs a las notas de esa sección
+    '''
+    # Secciones -> creamos un array de todos los elementos con el tag DIV que tengan el atributo class=p12-dropdown-column
+    # y seleccionamos nuestro primer elemento
+    secciones= soup.find_all('div', attrs={'class':'p12-dropdown-column'})[0]
+
+    #buscamos los tag a para obtener el href que contiene el link de la seccion
+    link_secciones= secciones.find_all('a')
+    
+    #recorremos el array de tag a y obtemos los elementos href que contienen links
+    href_link_secciones=[i.get('href') for i in link_secciones]
+
+    #seleccionamos el primer link que corresponde a la seccion el pais
+    pagina_seccion_el_pais= requests.get(href_link_secciones[0])
+    #parseamos la pagina seccion el pais
+    soup_pagina_seccion_el_pais= BeautifulSoup(pagina_seccion_el_pais.text,'lxml')
+
+    #la pagina de articulos de noticias se dividen en 3 sectores
+    #Top (1 noticia principal) - Semi(2 noticias semiprincipales) -  articulos (el resto de noticias)
+
+    #!TOP
+    top_noticias_seccion_el_pais = soup_pagina_seccion_el_pais.find('div', attrs={'class':'article-item__content'})
+# agregamos el link principal + el contenido href dentro del elemento a que se encuentra en nuestro div 
+    link_top_noticias_seccion_el_pais= [link_principal + top_noticias_seccion_el_pais.a.get('href')]
+
+    #! Semi
+    semi_noticias_seccion_el_pais = soup_pagina_seccion_el_pais.find_all('h2', attrs={'class':'title-list featured-article'})
+		#recorremos el array de noticias semi importantes y seleccionamos el valor de href de los h2
+    link_semi_noticias_seccion_el_pais=[link_principal+i.a.get('href') for i in semi_noticias_seccion_el_pais]
+
+    # #! articulos
+    articulos_noticias_seccion_el_pais= soup_pagina_seccion_el_pais.find_all('h2', attrs={'class':'is-display-inline title-list'})
+
+    link_articulos_noticias_seccion_el_pais=[link_principal+i.a.get('href') for i in articulos_noticias_seccion_el_pais]
+
+    URL.extend(link_top_noticias_seccion_el_pais)
+    URL.extend(link_semi_noticias_seccion_el_pais)
+    URL.extend(link_articulos_noticias_seccion_el_pais)
+
+    
+    return URL
+
+print (obtener_notas(soup))
+```
+
+<details>
+<summary><b>Otros ejercicios resueltos</b></summary>
+
+_Markdown is valid, but add empty lines to separate from the HTML tags._
+
+- Bullet
+- Points
+
+```python
+import requests
+from bs4 import BeautifulSoup
+
+HOME_URL = 'https://www.pagina12.com.ar'
+
+def parse_page(link):
+    try:
+        section = requests.get(link)
+        if section.status_code == 200:
+            pass
+            #PARSE CURRENT PAGE
+            soupSection = BeautifulSoup(section.text, 'lxml')
+            #GET FEATURED ARTICLE
+            featuredArticle = soupSection.find('h1', attrs={'class': 'title-list'})
+            featuredLink = HOME_URL + featuredArticle.a.get('href')
+            #GET HORIZONTAL ARTICLES
+            articleListH = soupSection.find_all('h2', attrs={'class': 'title-list featured-article'})
+            articleLinkH = [(HOME_URL + titleH.a.get('href')) for titleH in articleListH]
+            #GET VERTICAL ARTICLES
+            articleListV = soupSection.find_all('h2', attrs={'class': 'is-display-inline title-list'})
+            articleLinkV = [(HOME_URL + titleV.a.get('href')) for titleV in articleListV]
+
+            return(articleLinkH + articleLinkV)
+        else:
+            raise ValueError(f'Error: {section.status_code}')
+    except ValueError as ve:
+        print(ve)
+
+def parse_home():
+    try:
+        response = requests.get(HOME_URL)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'lxml')
+            #GET NAV LINKS
+            listLinks = soup.find('ul', attrs = {'class': 'main-sections'}).find_all('li')
+            link = listLinks[1].a.get('href')
+            parse_page(link)
+        else:
+                raise ValueError(f'Error: {response.status_code}')
+    except ValueError as ve:
+        print(ve)
+
+def run():
+    parse_home()
+
+if __name__=='__main__':
+    run()
+```
+```python
+def news(link):
+    """
+    Definición: Extracción de titulares y links de portal de noticias Argentino.
+    
+    Parámetro: 
+    -link: URL de la sección de noticias a procesar.
+    
+    Retorno: Títulos y links de las noticias pertenecientes a ella.   
+    """
+    req = requests.get(link)
+    soup = BeautifulSoup(req.text, "lxml")
+    article_list = soup.find_all("h4", attrs={"class" : "is-display-inline title-list"})
+    #Obtenemos los links de las noticias
+    links_list = [link[:27]+article.a.get("href") for article in article_list]
+    #Obtenemos los titulos de las noticias
+    titles_list = [article.a.get_text() for article in article_list]
+    return titles_list,links_list
+```
+
+```python
+#Importacion de Librerias
+import requests
+from bs4 import BeautifulSoup
+
+#Funciones
+def GetLinks(ProtocolDomain, Soup):
+    Notices=Soup.find_all('div',{'class','article-item__content'})
+    Notices=[ProtocolDomain+ Notice.a.get('href') for Notice in Notices]
+    return(Notices)
+
+#Variables de Entrada
+Links_sections='https://www.pagina12.com.ar/secciones/el-pais'
+url='https://www.pagina12.com.ar'
+
+#Preparacion de Variable
+page = requests.get(Links_sections)
+soup= BeautifulSoup(page.text,'lxml')
+
+#Invocacion de Funcion
+GetLinks(url, soup)
+```
+
+```python
+# Define una nueva funcion
+def obtener_articulos(soup):
+    # Crea un array para almacenar los enlaces
+    lista_articulos = []
+    
+    # Busca el div que almacena el primer articulo
+    articulo_principal = soup.find('div', attrs={'class':'article-item__content'})
+    if articulo_principal:
+        # Agrega el href del a que esta dentro del h2 
+        lista_articulos.append(articulo_principal.h2.a.get('href'))
+    
+    # Busca todos los divs que almacenan articulos
+    grupo_articulos = soup.find_all('div', attrs={'class':'articles-list'})
+    # Hay dos grupos de articulos, dos semi featured, yel resto de los articulos
+    # Esta iteracion hace un loop por los grupos de articulos
+    for grupo in grupo_articulos:
+        articulos = grupo.find_all('article', attrs={'class':'article-item'})
+        
+        # Y esta hace un loop entre los articulos dentro de ese grupo de articulos
+        for articulo in articulos:
+            # Busca el div que almacena el texto, aunque el href tambien se podria conseguir enla img
+            contenedor = articulo.find('div', attrs={'class':'article-item__content-footer-wrapper'})
+            # Asigna el enlace al array
+            lista_articulos.append(contenedor.a.get('href'))
+            
+    return lista_articulos
+```
+
+```python
+# Web Scrapper - IMDB Top 250 movies
+import requests as rq
+from bs4 import BeautifulSoup
+
+# Saving the URL
+url = 'https://www.imdb.com/chart/top/?ref_=nv_mv_250'
+
+# Creating the request
+page = rq.get(url)
+
+# Making sure the web got the solicitude
+page.status_code
+print('The status of the request is: {}'.format(page.status_code))
+
+# Creating the soup
+soup = BeautifulSoup(page.text, 'lxml')
+
+# Looks like the 'lister' tag has all the information we need
+general = soup.find('div', attrs = {'class':'lister'})
+
+# Now let's go deeper
+general = soup.find('tbody', attrs= {'class':'lister-list'}).find_all('tr')
+
+# All the information are in these tags, we just need to extract them!
+# First, let's create a list with all the links
+
+def link_creation(general):
+    section = general[0]
+    link_sections = [section.a.get('href') for section in general]
+    index = 1
+    common = '?pf_rd_m=A2FGELUUNOQJNL&pf_rd_p=1a264172-ae11-42e4-8ef7-7fed1973bb8f&pf_rd_r=MBY5AS7XQMWKBXS6Y8N7&pf_rd_s=center-1&pf_rd_t=15506&pf_rd_i=top&ref_=chttp_tt_'
+    links = []
+    for i in link_sections:
+        link = ('www.imdb.com' + str(i) + common + str(index))
+        links.append(link)
+        index += 1
+    
+    return links
+
+# Now let's create a list of movie names!
+
+def movie_names(general):
+    section = general[0]
+    movie_names = [section.find('td', attrs = {'class':'titleColumn'}).a.get_text() for section in general]
+    return movie_names
+
+# And for everything else...
+
+def categorics(general):
+    section = general[0]
+    ratings = [section.find('span', attrs = {'name':'ir'}).get('data-value') for section in general]
+    qualifiers = [section.find('span', attrs = {'name':'nv'}).get('data-value') for section in general]
+    year = [section.find('span', attrs = {'class':'secondaryInfo'}).get_text() for section in general]
+    protagonist_dir = [section.find('td', attrs = {'class':'titleColumn'}).a.get('title') for section in general]
+
+    return(section, ratings, qualifiers, year, protagonist_dir)
+```
+</details>
+<br>
+
+>💡El texto también se puede extraer como:
+
+```python
+seccion.a.text
+```
+
+Arroja el mismo tipo de dato str, quizá haya diferencia en tiempo de ejecución.
