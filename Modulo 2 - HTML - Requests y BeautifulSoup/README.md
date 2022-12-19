@@ -211,12 +211,7 @@ print (obtener_notas(soup))
 ```
 
 <details>
-<summary><b>Otros ejercicios resueltos</b></summary>
-
-_Markdown is valid, but add empty lines to separate from the HTML tags._
-
-- Bullet
-- Points
+<summary><b>Otros Ejemplos resueltos</b></summary>
 
 ```python
 import requests
@@ -409,3 +404,191 @@ seccion.a.text
 Arroja el mismo tipo de dato str, quizá haya diferencia en tiempo de ejecución.
 
 # 7. Manejo de errores
+>📌 “Puede pasar que dejemos corriendo en la noche un scraper, nos vayamos a dormir y a la mañana siguiente cuando esperamos encontrarnos con un montón de contenido ya descargado nos encontramos que a los 10min de que lo pusimos a correr ocurrió un error y se interrumpió la ejecución”
+
+## Try, except
+
+La importancia de la programación defensiva…
+
+```python
+#Ejemplo de como verificar si estamos listo para parsear el contenido de la respuesta
+r = requests.get('https://www.pagina12.com.ar/secciones/el-pais')
+if r.status_code == 200:
+    # Procesamos la respuesta
+    print('procesamos..')
+else:
+     # Informar el error
+    print('informamos...')
+```
+
+<img src="./img/m2c4-1.png"/>
+
+```python
+# url de una nota/articulo de la seccion deportes
+url_nota = 'https://www.pagina12.com.ar/509102-campeones-del-mundo-en-futbol-y-alegria'
+print(url_nota)
+```
+
+Para nosotros obtener un status_code distinto de 200  (código que nos dice que nuestra petición a sido exitosa),, tiene que haber algún servidor web que haya recibido nuestra solicitud, haya procesado, haya encontrado algún error en el proceso, y entonces nos devolvería el código del error 
+
+Ahora supongamos que el link a la nota está mal cargado, o que sacaron la nota del sitio, o que directamente no está funcionando la web de página 12.
+
+```python
+# modificamos la url de la nota con el metodo replace, para que nos de un error
+url_mala = url_nota.replace('2','3')
+print(url_mala)
+#https://www.pagina13.com.ar/......
+```
+
+Esto lo hacemos sólo para simular una URL mal cargada o un servidor caído
+
+```python
+# ahora hagamos una resquets a la URL "mala"
+# y nos dara un error de status_code, que interrumpe la ejecucion de nuestro codigo
+r = requests.get(url_mala)
+if r.status_code == 200:
+    # Procesamos la respuesta
+    print('procesamos..')
+else:
+     # Informar el error
+    print('informamos status code != 200')
+```
+
+Obtuvimos un error que interrumpió la ejecución del código. No llegamos a imprimir el status code. Muchas veces estos errores son inevitables y no dependen de nosotros. Lo que sí depende de nosotros es cómo procesarlos y escribir un código que sea robusto y resistente a los errores.
+
+```python
+# lo que podemos hacer para que el error del estatus_code no interrumpa la operacion 
+# es encapsular dentro de un bloque TRY/except, para poder continuar el flujo de nuestro programa normalmente
+try:
+    nota = requests.get(url_mala)
+except:
+    print('Error en la request!\n')
+#...
+#...
+#...
+#... 
+print('El resto del programa continúa...')
+```
+
+Las buenas prácticas de programación incluyen el manejo de errores para darle robustez al código
+
+```python
+try:
+    nota = requests.get(url_mala)
+except Exception as e:
+    print('Error en la request:')
+		# imprimimos que tipo de excepcion/error fue
+    print(e)
+    print('\n')
+#...
+#...
+#...
+#... 
+print('El resto del programa continúa...')
+```
+
+Lo mismo ocurre cuando encadenamos búsquedas. Retomemos esta línea de código, donde queremos obtener el link  de una etiqueta “a”
+
+```python
+featured_article.a.get('href')
+```
+
+Si no existe el tag "a", obtendremos un error que dice que un objeto `None`no tiene ningún método .get('href'), esto normalmente interrumpiría la ejecución de nuestro código, pero si utilizamos la estructura TRY/EXCEPT podemos continuar la ejecución del código por mas de que haya algún error 
+
+```python
+try:
+    featured_article.a.get('href')
+except:
+	# pass indica que continue el codigo a pesar de que tenga o no errores
+    pass
+print('continua el codigo')
+```
+
+Siempre es importante definir en un `except` el tipo de errores que esperamos recibir, podemos dejar el `except` sencillo pero no tendríamos el feedback de lo que ocurrió.
+
+Algo que se puede hacer para ser más explicito es:
+
+```python
+from requests.exceptions import ConnectionError
+
+url_mala = 'https://www.pagina13.com.ar'
+
+try:
+    requests.get(url_mala)
+except ConnectionError as e:
+    print("Tuviste un error")
+    print(e)
+```
+<details>
+<summary><b>Otros Ejemplos resueltos</b></summary>
+
+```python
+def ObtenerLinkNotas(soup):
+    notas_array = list()
+    notas = soup.find_all('div',{'class':'articles-list'})
+    #len(notas)
+    notas_link = notas[1].find_all('div',{'class':'article-item__content'})
+    for i_notas_link in notas_link:
+        if i_notas_link.find('a'):
+            notas_array.append(i_notas_link.find('a').get('href'))
+    return notas_array
+```
+
+```python
+def obtener_notas(soup):
+    '''Función que recibe un objeto de BeatiFulSoup de una página de una sección
+    y devuelve una lista de URLs a las notas de esa sección
+    '''
+    lista_notas = []
+
+    #Obtengo el articulo promocionado
+    featured_article= soup.find('div', attrs={'class': 'article-item__header deco-bar-here'})
+    if featured_article:
+        url_art= url+featured_article.a.get('href')
+        lista_notas.append(url_art)
+        
+
+    #obtengo el listado de artículos
+    article_list= soup.find_all('div',attrs={'class': 'articles-list'})
+    article_list
+    for articles in article_list:
+        #print(articles.prettify())
+        #print('aqui')
+        for article in articles.find_all('div', attrs={'class': 'article-item__header'}):
+            #print(article)
+            #print('paso algo')
+            if article.a:
+                url_art= url+article.a.get('href')
+                lista_notas.append(url_art)
+
+    return lista_notas
+```
+
+```python
+def obtener_notas(soup):
+    '''Función que recibe un objeto de BeatiFulSoup de una página de una sección
+    y devuelve una lista de URLs a las notas de esa sección
+    '''
+    lista_notas = []
+
+    #Obtengo el articulo promocionado
+    featured_article= soup.find('div', attrs={'class': 'article-item__header deco-bar-here'})
+    if featured_article:
+        lista_notas.append(featured_article.a.get('href'))
+
+    #obtengo el listado de artículos
+    article_list= soup.find_all('div',attrs={'class': 'articles-list'})
+    article_list
+    for articles in article_list:
+        #print(articles.prettify())
+        #print('aqui')
+        for article in articles.find_all('div', attrs={'class': 'article-item__header'}):
+            #print(article)
+            #print('paso algo')
+            if article.a:
+                url_art= url+article.a.get('href')
+                lista_notas.append(url_art)
+
+    return lista_notas
+```
+</details>
