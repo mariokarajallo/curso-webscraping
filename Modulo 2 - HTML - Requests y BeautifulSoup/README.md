@@ -5,6 +5,7 @@
 - [Clase 5 Parseando HTML con BeautifulSoup](#5-parseando-html-con-beautifulSoup)
 - [Clase 6 Extrayendo información](#6-extrayendo-información)
 - [Clase 7 Manejo de errores](#7-manejo-de-errores)
+- [Clase 8 Descargando Contenido](#8-descargando-contenido)
 
 
 
@@ -590,5 +591,390 @@ def obtener_notas(soup):
                 lista_notas.append(url_art)
 
     return lista_notas
+```
+</details>
+
+# 8. Descargando contenido
+
+En esta clase vamos a empezar a descargar el contenido de la nota. 
+
+```python
+# Accedemos a una nota/articulo web Link de la noticia a procesar
+# (perteneciente al portal de noticias Argentino pagina12).
+url_nota = lista_notas[0]
+print(url_nota)
+```
+
+Lo elementos que podemos extraer de una nota son:
+
+- Titulo
+- fecha
+- copete
+- volanta
+- cuerpo
+- autor
+
+<img src="./img/m2c5-1.png"/>
+
+```python
+#Encapsulamos toda la resquets en un bloque try/except
+try:
+    nota = requests.get(url_nota)
+		#verificamos el status_code para procesar la peticion
+    if nota.status_code == 200:
+				#parseamos la web
+        soup_nota = BeautifulSoup(nota.text, 'lxml')
+        # Extraemos el título, para ello inspeccionamos elementos en la web
+        titulo = soup_nota.find('div', attrs={'class':'article-title'})
+        print(titulo.text)
+        # Extraemos la fecha
+        fecha = soup_nota.find('span', attrs={'pubdate':'pubdate'}).get('datetime')
+        print(fecha)
+        # Extraemos la volanta
+        volanta = soup_nota.find('div', attrs={'class':'article-prefix'})
+        if volanta:
+            ret_dict['volanta'] = volanta.get_text()
+        else:
+            ret_dict['volanta'] = None
+except Exception as e:
+    print('Error:')
+    print(e)
+    print('\n')
+```
+
+<details>
+<summary><b>Otros Ejemplos resueltos</b></summary>
+
+```python
+<try:
+    nota = requests.get(url_nota)
+    if nota.status_code == 200:
+        s_nota = BeautifulSoup(nota.text, 'lxml')
+        #Extraemos el titulo 
+        titulo = s_nota.find('div', attrs = {'class':'col 2-col'}).find('h1')
+        print(titulo.text)
+        #Extraer la fecha
+        fecha = s_nota.find('time').get('datetime')
+        print(fecha)
+        #Extraer copete
+        for copete in s_nota.find('div', attrs = {'class':'article-tags'}).find_all('a'):
+            print(copete.get_text())
+        #Extraer volanta
+        volanta = s_nota.find('div', attrs = {'class':'col 2-col'}).find('h4')
+        print(volanta.text)
+        #Extraer cuerpo
+        cuerpo = s_nota.find('div', attrs = {'class':'article-text'}).find('p')
+        print(cuerpo.text)
+        #Extraer autor
+        autor = s_nota.find('ul', attrs = {'class':'list column small-12'}).find('a')
+        print(autor.get_text())     
+         
+except Exception as e:
+    print('Error')
+    print(e)
+    print('\n') >
+```
+
+```python
+def get_notice(url):
+    """
+    Definición: Extracción de fecha, titulo, volanta, copete y cuerpo de la noticia.
+    
+    Parámetro: 
+    -url: Link de la noticia a procesar (perteneciente al portal de noticias Argentino pagina12).
+    
+    Retorno: Fecha, titulo, volanta, copete y cuerpo de la noticia.   
+    """
+    try:
+        nota = requests.get(url)
+        if nota.status_code == 200:
+            s_nota = BeautifulSoup(nota.text, "lxml")
+            #Extraemos la fecha de la noticia
+            fecha = s_nota.find("div", attrs={"class" : "date"}).find("span", attrs= {"class": "p12-separator--right--gray"}).text
+            print(fecha)
+            #Extraccion del titulo
+            titulo = s_nota.find("div", attrs={"class": "col 2-col"}).find("h1")
+            print("Título de la noticia:",titulo.text)
+            #Extraemos la volanta de la noticia
+            volanta = s_nota.find("div", attrs={"class": "col 2-col"}).find("h4")
+            print("\n")
+            print("Volanta de la noticia:",volanta.text)
+            #Extraemos el copete de la noticia
+            print("\n")
+            copete = s_nota.find("div", attrs={"class": "col 2-col"}).find("h3")
+            print("Copete:",copete.text)
+            #Extraemos el cuerpo de la noticia
+            print("\n")
+            cuerpo = s_nota.find("div", attrs={"class":"article-main-content article-text"}).find_all("p")
+            for parrafo in cuerpo:
+                print(parrafo.get_text())
+    except Exception as e:
+        print('Error:', e)
+        print("\n\n")
+```
+
+```python
+url = 'https://www.lanacion.com.ar/'
+
+def main(url:str):
+  response = requests.get(url)
+
+  if response.status_code == 200:
+    s = BeautifulSoup(response.text, 'lxml')
+
+    sections = s.find_all('h2')
+
+    sections_links = [url + section.a.get('href') for section in sections]
+    
+    return sections_links
+
+url = 'https://www.lanacion.com.ar'
+
+links_articulos = main(url)
+links_articulos
+
+try:
+  response = requests.get(link_articulo)
+
+  if response.status_code == 200:
+    article = BeautifulSoup(response.text, 'lxml')
+
+    #Se extrae el titulo
+    title = article.find('h1')
+
+    print(title.get_text())
+    print('\n')
+
+    #Se extrae
+    subtitle = article.find('h2')
+
+    print(subtitle.get_text())
+    print('\n')
+
+    paragraphs = article.find_all('p', 'com-paragraph --s')
+    # print(paragraphs)
+
+    for paragraph in paragraphs:
+      print(paragraph.get_text())
+      print('\n')
+
+except Exception as e:
+  print('Error:')
+  print(e)
+  print('\n')
+```
+
+```python
+import requests
+from bs4 import BeautifulSoup
+import lxml
+import re
+
+url = "https://www.pagina12.com.ar"
+response = requests.get(url)
+#response.status_code, response.text, response.content
+#response.headers, response.request.headers, response.request.method
+
+soup = BeautifulSoup(response.text, 'lxml') #type(s), print(s.prettify())
+
+# Every section is inside a il that is inside a ul. (Find) only returns the first tag
+sections = soup.find('ul', attrs={'class':'horizontal-list main-sections hide-on-dropdown'}).find_all('li')
+
+sections_links = [section.a.get('href') for section in sections]
+#print(sections_links)
+sections_titles = [section.a.text for section in sections]
+#print(sections_titles)
+
+def build_link(url, link):
+    is_well_formed_link = re.compile(r'^https?://.+/.+$')
+    is_root_path = re.compile(r'^/.+$')
+    
+    if is_well_formed_link.match(link):
+        return link
+    elif is_root_path.match(link):
+        return f'{url}{link}'
+    else:
+        return f'{url}/{link}'
+
+def clean_text(text):
+    return text.replace("\xa0", "").replace("\n", "")
+
+def get_response(url):
+    try:
+        return requests.get(url)
+    except Exception as e:
+        print("Error at get_response: ",e)
+
+def get_soup(response):
+    # Soup object
+    return BeautifulSoup(response.text, 'lxml')
+
+def get_articles_links(soup):
+
+    articles_links = []
+    
+    # Get the featured article of the section 
+    # by searching the FIRST div with class = article-item__content
+    featured_article = soup.find('div', attrs={'class':'article-item__content'})
+    
+    if featured_article:
+        featured_article_link = build_link(url,featured_article.a.get('href'))
+        articles_links.append(featured_article_link)
+    
+    # The remaingin articles are in different group of divs
+    article_groups = soup.find_all('div', attrs={'class':'articles-list'})
+    
+    for group in article_groups:
+        # All the articles of the group
+        articles = group.find_all('article', attrs={'class':'article-item'})
+        # Loop for every article
+        for article in articles:
+            # The div that has the article inside
+            div_of_article = article.find('div', attrs={'class':'article-item__content-footer-wrapper'})
+            article_link = build_link(url, div_of_article.a.get('href'))
+            articles_links.append(article_link)
+    
+    # Special case for the 'cultura y espectaculos' section
+    if not articles_links:
+        # All the articles
+        articles = soup.find_all('div', attrs={'class':'article-box__container'})
+        # Loop for every article
+        for article in articles:
+            article_link = article.h2
+            article_link = build_link(url, article_link.a.get('href'))
+            articles_links.append(article_link)        
+    
+    # Returns a list
+    return articles_links
+
+def get_article_title(soup):
+    try:
+        title = soup.find('div', attrs={'class':'content'}).h1.text
+        title = clean_text(title)
+        if title:
+            return title
+        else:
+            return "No title."
+    except Exception as e:
+        print("Error getting the article title: ", e)
+
+def get_article_date(soup):
+    try:
+        date = soup.find('div', attrs={'class':'date modification-date'}).span.time.text
+        if date:
+            return date
+        else:
+            return "No date."
+    except Exception as e:
+        print("Error getting the article date: ", e)    
+
+def get_article_copete(soup):
+    try:
+        copete = soup.find('div', attrs={'class':'content'}).h3.text
+        copete = clean_text(copete)
+        if copete:
+            return copete
+        else:
+            return "No copete."
+    except Exception as e:
+        print("Error getting the article copete: ", e)        
+
+def get_article_volanta(soup):
+    try:
+        volanta = soup.find('div', attrs={'class':'content'}).h4.text
+        volanta = clean_text(volanta)
+        if volanta:
+            return volanta
+        else:
+            return "No volanta."
+    except Exception as e:
+        print("Error getting the article volanta: ", e)        
+
+def get_article_body(soup):
+    try:
+        body = soup.find('div', attrs={'class':'article-main-content article-text'})
+        body_text = ""
+        if body:
+            for p in body:
+                body_text = body_text + p.text
+            body_text = clean_text(body_text)
+            return body_text
+        else:
+            return "No body."
+    except Exception as e:
+        print("Error getting the article body: ", e)  
+
+def get_article_author(soup):
+    try:
+        author = soup.find('div', attrs={'class':'author-name'})
+        if author:
+            author = clean_text(author.text)
+            return author
+        else:
+            return "No author."
+    except Exception as e:
+        print("Error getting the article author: ", e)  
+
+for section in sections_links:
+    articles_titles = []
+    articles_dates = []
+    articles_copetes = []
+    articles_volantas = []
+    articles_bodys = []
+    articles_authors = []
+    
+    # Get the response
+    section_response = get_response(section)
+    
+    if section_response.status_code == 200:
+        # Only execute if the response status code was ok
+        section_soup = get_soup(section_response)
+        articles_links = get_articles_links(section_soup)
+
+        print("\n\n- Section: ", section)
+        print("- Response: ", section_response.status_code)
+        
+        # Get articles info
+        for article_link in articles_links:
+            
+            article_response = get_response(article_link)
+            if section_response.status_code == 200:
+                article_soup = get_soup(article_response)
+                
+                title = get_article_title(article_soup)
+                articles_titles.append(title)
+                #print("Title: ", title)
+            
+                date = get_article_date(article_soup)
+                articles_dates.append(date)
+                #print("Date: ", date)
+
+                copete = get_article_copete(article_soup)
+                articles_copetes.append(copete)
+                #print("Copete: ", copete)
+
+                volanta = get_article_volanta(article_soup)
+                articles_volantas.append(volanta)
+                #print("volanta: ", volanta)
+
+                body = get_article_body(article_soup)
+                articles_bodys.append(body)
+                #print("body: ", body)
+
+                author = get_article_author(article_soup)
+                articles_authors.append(author)
+                #print("author: ", author)
+                
+            else:
+                print("Error status code: ",section_response.status_code)
+                
+        #print("- Titles: ", articles_titles)
+        #print("- Dates: ", articles_dates)
+        #print("- Copetes: ", articles_copetes)
+        #print("- Volantas: ", articles_volantas)
+        #print("- Bodys: ", articles_bodys)
+        #print("- Authors: ", articles_authors)
+    else:
+        print("Error status code: ",section_response.status_code)
 ```
 </details>
