@@ -6,7 +6,7 @@
 - [Clase 6 Extrayendo información](#6-extrayendo-información)
 - [Clase 7 Manejo de errores](#7-manejo-de-errores)
 - [Clase 8 Descargando Contenido](#8-descargando-contenido)
-- [Clase 9 Contenido multimedia](#9-contenido-multimedia)\
+- [Clase 9 Contenido multimedia](#9-contenido-multimedia)
 - [Clase 10 Unificando el Scraper](#10-unificando-el-scraper)
 
 
@@ -1283,3 +1283,5 @@ except Exception as e:
 
 
 <details>
+
+# 10. Unificando el scraper
