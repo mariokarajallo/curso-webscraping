@@ -6,6 +6,7 @@
 - [Clase 6 Extrayendo información](#6-extrayendo-información)
 - [Clase 7 Manejo de errores](#7-manejo-de-errores)
 - [Clase 8 Descargando Contenido](#8-descargando-contenido)
+- [Clase 9 Contenido multimedia](#9-coantenido-multimedia)
 
 
 
@@ -978,3 +979,306 @@ for section in sections_links:
         print("Error status code: ",section_response.status_code)
 ```
 </details>
+
+# 9. Contenido multimedia
+
+Visualización de Imagen → Liberia : IPython.display 
+
+```python
+import requests
+from bs4 import BeautifulSoup
+#Funcion necesaria para visualizar imagenes
+from IPython.display import Image
+```
+
+```python
+link_seccion='https://www.pagina12.com.ar/secciones/el-pais'
+url = requests.get(link_seccion)
+url.status_code
+soup=BeautifulSoup(url.text, 'lxml')
+```
+
+creamos una función que recibe como parámetro la “sopa”, es decir la estructura web parseada, de donde se obtendrá una lista de URL de las notas/artículos de una sección de la web pagina12
+
+```python
+def obtener_noticias(soup):
+    lista_noticias=[]
+
+    #obtener noticias promocionados
+    noticias_promocionadas=soup.find('div', attrs={'class':'article-item__content'})
+    if noticias_promocionadas:
+        lista_noticias.append('https://pagina12.com.ar'+noticias_promocionadas.a.get('href'))
+
+    #obtener resto de noticias
+    resto_noticias=soup.find('section', attrs={'class':'list-content'})
+    for i in resto_noticias.find_all('div', attrs={'class':'article-item__header'}):
+        if i.a:
+            lista_noticias.append('https://pagina12.com.ar'+i.a.get('href'))
+    lista_noticias
+
+    return lista_noticias
+```
+
+podemos visualizar lo que retorna la función, que es una lista de noticias.
+
+```python
+lista_noticias = obtener_noticias(soup)
+lista_noticias
+```
+
+una vez que tenemos nuestra lista de noticias que contiene todas las URLS de la primera pagina de una sección, vamos a obtener los elementos de la nota, para ello seleccionamos el primer elemento [0] de la lista.
+
+Con el método TRY/EXCEPT nos aseguramos que nuestro programa siga ejecutándose.
+
+```python
+#selecionamos el primer elemento de nuestro array que corresponde a una nota
+link_nota= lista_noticias[0]
+try:
+    #hacemos la peticion de la web
+    nota=requests.get(link_nota)
+    #verificamos la respuesta del servidor sea 200
+    if nota.status_code==200:
+        #parseamos nuestra pagina web para analizar
+        soup_nota=BeautifulSoup(nota.text, 'lxml')
+        #extraemos el titulo de la nota
+        titulo = soup_nota.find('h1').text
+        print('Titulo: ',titulo)
+        #extraemos la fecha de la nota
+        fecha = soup_nota.find('time').get_text()
+        print('Fecha: ',fecha)
+        #extraemos el copete
+        copete= soup_nota.find('h4').get_text()
+        print('Copete: ',copete)
+        #extraemos la volanta
+        volanta= soup_nota.find('h3').get_text()
+        print('Volanta: ',volanta)
+        #extraemos el cuerpo de la nota
+        cuerpo= soup_nota.find('div', attrs={'class':'article-main-content article-text'}).find_all('p')
+        for c in cuerpo:
+                print (c.get_text())
+        #extraemos el autor de la nota
+        autor= soup_nota.find('div', attrs={'class':'author-name'}).get_text()
+        print ('autor: ', autor)
+
+except Exception as e:
+    print ('Error')
+    print (e)
+    print ('\n')
+```
+
+creamos una variable “media”, para obtener la imagen de la nota, debemos de parsear el tag DIV, para obtener la URL de la imagen
+
+```python
+#parseamos el tag div que contiene la imagen de la nota
+media = soup_nota.find('div', attrs={'class':'article-main-media-image__container'})
+media
+```
+
+```python
+#verificamos que nuestro elemento tenga un valor
+if len(media):
+		# si es asi-> seleccionamos el propiedad img de nuestro tag
+		# y guardamos la URL de la imagen
+    imagen=media.img.get('src')
+		# imprimimos la URL para poder ver la direccion web de la imagen
+    print (imagen)
+else:
+    print ('no se encontraron imagenes')
+```
+
+```python
+#solicitamos por medio de resquets la imagen de la nota
+imagen_req=requests.get(imagen)
+# verificamos que no haya ningun error
+imagen_req.status_code
+```
+
+Obtener contenido multimedia (utilizamos la libreria YPython.display)
+
+Ahora que ya hicimos nuestra petición y salio todo ok, utilizamos el método “Image” de la librería YPython.display de python y llamamos a nuestro resquets de imagen para poder visualizar
+
+```python
+Image(imagen_req.content)
+```
+
+<details>
+<summary><b>Otros Ejemplos resueltos</b></summary>
+```python
+#Importacion de Librerias
+import requests
+from bs4 import BeautifulSoup
+from IPython.display import Image #Funcion necesaria para visualizar imagenes
+
+#Funciones
+def GetDataNews(url):
+    try:
+        page = requests.get(url)
+        if(page.status_code == 200):
+            soup = BeautifulSoup(page.text,'lxml')
+            #Extraer Titulo
+            titulo=''
+            try:
+                titulo = soup.find('div',{'class','col 2-col'}).h1.get_text()
+            except:
+                pass
+
+            #Extraer Fecha
+            fecha=''
+            try:
+                fecha=soup.find('div',{'class','date modification-date'}).time.get('datetime')
+            except:
+                pass
+
+            #Extraer Copete
+            copete=''
+            try:
+                copete=soup.find('div',{'class','article-main-content article-text'}).find_all('b')[0].get_text()
+            except:
+                pass
+
+            #Extraer Volanta
+            volanta=''
+            try:
+                volanta=soup.find('div',{'class','col 2-col'}).h4.get_text()
+            except:
+                pass
+            
+            #Extraer Cuerpo
+            cuerpo=''
+            try:
+                cuerpo=soup.find('div',{'class','article-main-content article-text'}).find_all('p')
+                #print(cuerpo)3
+                contenido=''
+                for parrafo in cuerpo:
+                    contenido= contenido + parrafo.get_text()
+            except:
+                pass
+
+            #Extraer Autor
+            autor=''
+            try:
+                autor=soup.find('div',{'class','author-name'}).get_text()
+            except:
+                pass
+
+            #Extraer Imagen
+            imagen=''
+            try:
+                imagenes=soup.find('figure',{'class','object-fit-block--contain intrinsic-container intrinsic-container-3x2'}).find_all('img')
+                if(len(imagenes)==0): #Verificar que se haya encontrado por lo menos una imagen
+                    print('No se encontraron imagenes')
+                else:
+                    urlImagen=imagenes[-1].get('src') #Extraemos el link o url de la imagen
+                    imagen = requests.get(urlImagen) #descargamos la imagen comouna pagina cualquiera con el url que obtuvimos
+            except:
+                pass
+    except Exception as e: 
+        print('error')
+        print(e)
+        print('\n')
+    
+    return([titulo,fecha,copete,volanta,cuerpo,autor,imagen])
+
+        
+#Variables
+AllNews=[]
+AllLinks=['https://www.pagina12.com.ar/441054-cristina-kirchner-compartio-un-mensaje-despues-de-reunirse-c',
+ 'https://www.pagina12.com.ar/441008-antes-y-ahora-en-las-investigaciones-por-los-atentados-a-la-',
+ 'https://www.pagina12.com.ar/440906-primer-ministro-de-facto-un-diseno-sin-precedentes']
+
+#Extraccion de datos para cada URL
+for url in AllLinks:
+    AllNews.append(GetDataNews(url))
+
+#Todos los Datos Extraidos
+AllNews
+```
+
+```python
+def get_content_resources(url):
+    from IPython.display import Image
+    #Funcion que imprime la imagen
+    def print_image(src):
+        if src.status_code == 200:
+            return Image(src.content)
+
+    try:
+        articulo = requests.get(url_art)
+        if articulo.status_code == 200:
+            soup_articulo = BeautifulSoup(articulo.text,'lxml')
+            #Extraer el titulo
+            titulo = soup_articulo.find('h1')
+            print(titulo.text)
+            #Extraer fecha
+            fecha = soup_articulo.find('div',attrs={'class': 'date'}).find('span')
+            print(fecha.text)
+            #Extraer volanta
+            volanta = soup_articulo.find('h4')
+            print(volanta.text)
+            #ExtraerImagen
+            media = soup_articulo.find('div',attrs={'class','article-main-media-image__container'}).find('img')
+            if media:
+                img = media.get('src')
+                img_request = requests.get(img)
+            else:
+                return
+            return print_image(img_request)
+
+    except Exception as e:
+        print('Error:')
+        print(e)
+        print('\n')
+
+url_base = 'https://www.pagina12.com.ar'
+url_art = url_base + get_links(soup)[0]
+get_content_resources(url_art)
+```
+
+```python
+try:
+    nota=requests.get(url_nota)
+    if nota.status_code == 200:
+        s_nota= BeautifulSoup(nota.text, 'lxml')
+        #Extraer el titulo
+        titulo= s_nota.find('div', attrs={'class': 'col 2-col'}).find('h1')
+        #titulo= titulo_div.find('h1')
+        print(titulo.text)
+        
+        #extraer la fecha del articulo
+        fecha= s_nota.find('div', attrs={'class': 'date modification-date'}).span.time.get('datetime')
+        print(fecha)
+        
+        #extrar volanta o encabezado
+        encabezado= s_nota.find('div', attrs={'class': 'col 2-col'}).find('h4')
+        print(encabezado.text)
+        
+        #extraer copete o bajada
+        copete = s_nota.find('div', attrs={'class': 'col 2-col'}).find('h3')
+        print('\n')
+        print(copete.text)
+        
+        #extraer el autor
+        print('\n')
+        Autor = s_nota.find('div', attrs={'class': 'author-name'})
+        print(Autor.text)
+        
+        
+        #extraer cuerpo
+        print('\n')
+        cuerpo = s_nota.find('div', attrs= {'class': 'article-main-content article-text'}).find_all('p')
+        
+        body_text= ""
+        if cuerpo:
+            for p in cuerpo:
+                body_text= body_text+ p.text
+        print(body_text)
+        
+        
+except Exception as e:
+    print('Error:')
+    print(e)
+    print('\n')
+```
+
+
+<details>
