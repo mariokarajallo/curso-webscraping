@@ -306,6 +306,8 @@ driver = webdriver.Chrome(ChromeDriverManager().install())
 
 Para este proyecto de scraper a la pagina web de Latam AirLines, realizamos la requests. Pero como `son sitios dinámicos` y hacen uso de `Javascript`, en Jupyter notebook, python NO puede procesar este lenguaje y por eso hacemos uso de `Selenium`
 
+<img src="./img/m3c1-1.png"/>
+
 ```python
 import requests
 from bs4 import BeautifulSoup
