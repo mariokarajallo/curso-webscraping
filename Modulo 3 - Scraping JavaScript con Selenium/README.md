@@ -3,6 +3,7 @@
 # **Modulo III - Scraping JavaScript con Selenium**
 - [Clase 11 Instalación y configuración de Selenium](#11-instalación-y-configuración-de-selenium)
 - [Clase 12 Sitios dinámicos y Selenium](#12-sitios-dinámicos-y-selenium)
+- [Clase 13 Selección de elementos](#13-selección-de-elementos)
 
 # 11. **Instalación y configuración de Selenium** 
 
@@ -444,3 +445,5 @@ driver = webdriver.Chrome(executable_path='chromedriver.exe',options=options)
 url = '...'
 driver.get(url)```
 ```
+
+# 13. **Selección de elementos** 
