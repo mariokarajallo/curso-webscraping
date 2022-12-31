@@ -447,3 +447,295 @@ driver.get(url)```
 ```
 
 # 13. **Selección de elementos** 
+Se recomienda a la hora de inspeccionar paginas web, tener el inspector de elemento en otra ventana separada, para que no afecte la navegación del mismo ya que las paginas web reconocen la resolución del navegador, y acomodan el contenido en función a ello .  
+
+Para buscar y seleccionar uno o varios elementos de la web utilizaremos la función `find_element` o `find_elements` y armar el `xpath` (la ruta XML) que nos va a permitir identificar donde se encuentran cada uno de los elementos que necesitamos extraer a través de los tag y sus atributos.
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/bc08863a-e210-4aaf-bf82-adfe2bd8495b/Untitled.jpeg)
+
+En la misma documentación Oficial de Selenium obtendremos todo lo necesario para aprender a utilizar la función de `find_element` para un elemento, o para múltiples elementos `find_elements`
+
+[Locating Elements - Selenium Python Bindings 2 documentation](https://selenium-python.readthedocs.io/locating-elements.html)
+
+#### Xpath cheatseeht
+
+[Xpath cheatsheet](https://devhints.io/xpath)
+
+#### introducción a Xpath
+
+[XPath Tutorial](https://www.w3schools.com/xml/xpath_intro.asp)
+
+Elementos importantes de Xpath:
+
+```python
+"//" busca en todos los hijos del elemento.
+"/" busca sólo en hijos directos
+"." indica que la búsqueda debe empezar en ese elemento y no en el origen del árbol
+Los atributos de los tags se buscan entre [] y con @
+```
+
+## ¡Empecemos! ✈
+
+Vamos a scrapear el sitio de Latam para averiguar datos de vuelos en función el origen y destino, fecha y cabina. 
+
+<img src="./img/m3c2-1.png"/>
+
+Vamos a scrapear el sitio de Latam para averiguar datos de vuelos. La información que esperamos obtener de cada vuelo es:
+- Horas de salida y llegada (duración)
+
+```python
+from selenium import webdriver
+#importamos libreria para cargar el driver automaticamente
+from webdriver_manager.firefox import GeckoDriverManager
+# pagina del vuelo seleccionado ida, fecha, destino
+url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+```
+
+Paso 1: instanciar un **driver** del navegador (Necesitamos controladores web para diferentes navegadores web, en este ejemplo usamos para firefox. )
+
+```python
+options = webdriver.FirefoxOptions()
+# Podemos agregarle opciones al driver para utilizar los distintos modos del navegador
+options.add_argument('-private')
+driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+```
+
+Paso 2: hacer que el navegador cargue la página web.
+
+```python
+driver.get(url)
+```
+
+<img src="./img/m3c2-2.png"/>
+
+paso 3: Extraer información de la pagina. Carguemos la página y analicemos dónde se encuentra la información. Vemos que el bloque de vuelos se encuentra en una `ul` y que cada vuelo es un item de la lista, `li`.
+
+<img src="./img/m3c2-3.png"/>
+
+```python
+#Usaremos el Xpath para obtener la lista de vuelos
+vuelos = driver.find_elements('xpath','//ol/li')
+print (vuelos)
+```
+
+```
+# nos devuelve una lista de objetos selenium
+[<selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="7ba3e480-987b-4ee7-951e-bdb77af4522b")>, <selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="77cd6bbf-6e4c-4b75-b52b-bd969bfe567a")>, <selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="003e2b53-f5f1-40a8-ae1e-d95d0148696b")>,
+.
+.
+.]
+```
+
+Obtengamos la información de la hora de salida, llegada y duración del vuelo
+
+<img src="./img/m3c2-4.png"/>
+
+```python
+#seleccionamos el primer vuelo
+vuelo_1=vuelos[0]
+#hora de salida
+hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+print (hora_salida)
+```
+
+```
+10:50
+```
+
+```python
+#hora de llegada
+hora_llegada=vuelo_1.find_element('xpath','.//div[3]/span[1]').text.replace('\n+1','')
+print (hora_llegada)
+```
+
+```
+13:55
+```
+
+```python
+# Duracion del vuelo
+duracion_vuelo= vuelo_1.find_element('xpath','.//div[2]/span[2]').text
+print (duracion_vuelo)
+```
+
+```
+23 h 5 min
+```
+
+Paso 4: cerrar el navegador
+
+```python
+driver.close()
+```
+
+### Otros ejercicios Resueltos
+
+
+> 🛠 Reto: Obtener fecha de salida, llegada y duración de un vuelo utilizando selenium y Xpath.
+
+Al leer y/o analizar estos ejercicios quizas te pueda ayudar a solucionar algun error que puedas tener en tu propio codigo o ver como otros usuarios resuelven de diferente maneras el mismo problema.
+
+#### Ejercicio 1
+
+```python
+from time import sleep
+import requests as req
+from bs4 import BeautifulSoup as bs
+from selenium import webdriver as wd
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.common.by import By
+
+URL = "https://connect.avianca.com/flights/CLO/NAP/2022-05-02/2022-09-30/1-adults?res=CO&lang=ES&utm_source=avianca"
+wp_url = "https://chat.whatsapp.com/GRYhS6aPodA8vZNwOtcnbb"
+XPATH_FLIGHTS = "//*/li[@class='Itinerary']/text()"
+FOX = Service(r"C:\Drivers\firefox\geckodriver.exe")
+
+def run_firefox():
+    r_url =req.get(URL)
+    if r_url.status_code == 200:
+        try:       
+            opt = wd.FirefoxOptions()
+            opt.add_argument("--incognito")
+            firefox = wd.Firefox(service=FOX, options=opt)
+            firefox.get(URL)
+            sleep (5)
+            flights = firefox.find_elements(By.XPATH, value="//*/li[@class='Itinerary']")
+            print(flights)
+        except Exception as erre:
+            print("Error: " , "\n", erre)
+
+if __name__ == "__main__":
+    run_firefox()
+```
+
+#### Ejercicio 2
+
+Tener en cuenta que tuve que sacarle al arrival time un text hijo que decía “+1”. Me costó un montón encontrar la solución a eso, ya que con selenium no es tan fácil. Finalmente lo logré. Además tener en cuenta que uso “contains” para no poner los “id” de las clases, que seguramente van cambiando con el tiempo:
+
+```python
+for flight in flights:
+    departure_time = flight.find_element(By.XPATH, './/div[contains(@class, "flight-information")][1]/span').text
+    flight_duration = flight.find_element(By.XPATH, './/div[contains(@class, "flight-duration")]/span[2]').text
+    arrival_time_el = flight.find_element(By.XPATH, './/div[contains(@class, "flight-information")][2]/span')
+    arrival_time_child = arrival_time_el.find_element(By.XPATH, './*').text
+    arrival_time = arrival_time_el.text.replace(arrival_time_child, '')
+    print(f'Departure time: {departure_time}. Flight duration: {flight_duration}. Arrival time: {arrival_time}')
+```
+
+#### Ejercicio 3
+
+```python
+hora_salida = vuelo.find_element(by=By.XPATH,value='.//div[@class="sc-bEeSwp fYVRJw flight-information"]/span[1]').text
+aeropuerto_salida = vuelo.find_element(by=By.XPATH,value='//div[@class="sc-bEeSwp fYVRJw flight-information"]/span[2]').text
+duracion_vuelo = vuelo.find_element(by=By.XPATH,value='//div[@class="sc-bEeSwp fYVRJw flight-duration"]/span[2]').text
+```
+
+#### Ejercicio 4
+
+```python
+from selenium import webdriver
+
+# Cabe resaltar que la carpeta 'webdriver.exe' se encuentra dentro de la carpeta del proyecto local en Jupyter Notebook. 
+options = webdriver.ChromeOptions()
+options.add_argument('--incognito')
+driver = webdriver.Chrome(executable_path='chromedriver.exe', options=options)
+url = 'https://www.latamairlines.com/pe/es/ofertas-vuelos?origin=LIM&inbound=2022-09-26T17%3A00%3A00.000Z&outbound=2022-09-23T17%3A00%3A00.000Z&destination=BOG&adt=1&chd=0&inf=0&trip=RT&cabin=Economy&redemption=false&sort=RECOMMENDED'
+
+# Conectarse con la página web, en mi caso, me conecté a la página web de Latam Airlines Perú.
+driver.get(url)
+
+# Extraer la información de los vuelos
+from selenium.webdriver.common.by import By
+vuelos = driver.find_elements(by=By.XPATH, value='//li[@class="sc-bJTOcE dnJSKm"]')
+vuelo = vuelos[0]
+
+# Dado que la información de la hora de salida y llegada se encuentra en diferentes 'div', pero tienen el mismo nombre de clase, por lo tanto, se debe utilizar el método '.find_elements()' para obtener mencionada información.
+
+tiempo_salida_llegada = vuelo.find_elements(by=By.XPATH, value='.//div[@class="sc-cLxPOX jDdIbe flight-information"]/span[@class="sc-eTyWNx ilRvHO"]')
+
+# Información de la hora de salida
+tiempo_salida = tiempo_salida_llegada[0].text
+
+# Información de la hora de llegada
+tiempo_llegada = tiempo_salida_llegada[1].text
+
+# Información de la duración del vuelo
+duracion_vuelo = vuelo.find_element(by=By.XPATH, value='.//div[@class="sc-cLxPOX jDdIbe flight-duration"]/span[@class="sc-bsVVwV jAgyHF"]').text
+```
+
+#### Ejercicio 5
+
+```python
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+
+options = webdriver.ChromeOptions()
+options.add_argument('--incognito')
+s=Service('D:/drivers/chromedriver.exe')
+driver = webdriver.Chrome(service=s, options=options)
+url='https://www.latamairlines.com/co/es/ofertas-vuelos?origin=CLO&inbound=2022-09-24T17%3A00%3A00.000Z&outbound=2022-09-23T17%3A00%3A00.000Z&destination=BOG&adt=1&chd=0&inf=0&trip=RT&cabin=Economy&redemption=false&sort=RECOMMENDED'
+driver.get(url)
+vuelos = driver.find_element("xpath", '//div[@class="sc-ZUflv hlABHQ"]')
+print(vuelos)>
+```
+
+#### Ejercicio 6
+
+```python
+# solucion vieja “DeprecationWarning” Ya no se usa find_elements_by_xpath. selenium actualizo
+for flight in flights:
+    flight_info = flight.find_elements_by_xpath('.//div[@class="sc-hAXbOi jocxib flight-information"]')
+    departure = flight_info[0].find_element_by_xpath('.//span[@class="sc-cfWELz iIRsqM"]').text
+    arrival = flight_info[1].find_element_by_xpath('.//span[@class="sc-cfWELz iIRsqM"]').text
+    flight_time = flight.find_element_by_xpath('.//span[@class="sc-hCaUpS cTjSBD"]').text
+    arrival = arrival.replace('\n', '')
+    print(f'Salida:{departure} Llegada:{arrival} Duración:{flight_time}')
+```
+
+#### Ejercicio 7
+
+```python
+#Solucion vieja “DeprecationWarning” Ya no se usa find_elements_by_xpath. selenium actualizo
+def obtener_info_vuelo(vuelo):
+    hora_salida, hora_llegada = vuelo.find_elements_by_xpath('.//span[contains(@class, "dFRJGh")]')
+    duracion = vuelo.find_element_by_xpath('.//span[contains(@class, "ZOLOQ")]')
+    precio = vuelo.find_element_by_xpath('.//span[contains(@class, "displayAmount")]')
+    return (hora_salida.text, hora_llegada.text, duracion.text, precio.get_attribute('aria-label'))
+```
+
+#### Ejercicio 8
+
+```python
+# Solucion vieja “DeprecationWarning” Ya no se usa find_elements_by_xpath. selenium actualizo
+for vuelo in vuelos:
+    schedule = vuelo.find_elements_by_xpath('.//div[@class="sc-izvnbC eqFECQ flight-information"]/span[@class="sc-gMcBNU gwIRwm"]')
+    duration = vuelo.find_element_by_xpath('.//span[@class="sc-iLVFha jrpeUd"]')
+    print(f'Salida a: {schedule[0].text}, llega a:  {schedule[1].text} y dura: {duration.text}')
+```
+
+## Importante
+
+Si ha ustedes no les sale ningún viaje cuando usan el `Chrome` con Python (webdriver) pero mágicamente usando Chrome normal si salen viajes, es porque Latam ha detectado que estás usando `selenium` y no quiere dejarte ver sus viajes. ¿Cómo solucionar eso?
+
+Añade este código después de `options` al momento de instanciar el driver:
+
+```python
+options.add_argument('--disable-blink-features=AutomationControlled')
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option('useAutomationExtension', False)
+```
+
+## Paginas de interés
+
+Como armar tus propios Xpath
+
+[Xpath cheatsheet](https://devhints.io/xpath)
+
+Introducción Selenium
+
+[guru99 - Selenium Tutorial](https://www.guru99.com/selenium-tutorial.html)
+
+[guru99 - What is Selenium? Introduction to Selenium Automation Testing](https://www.guru99.com/introduction-to-selenium.html)
+
+[guru99 - Find Element and FindElements by XPath in Selenium WebDriver](https://www.guru99.com/find-element-selenium.html)
