@@ -478,8 +478,7 @@ Los atributos de los tags se buscan entre [] y con @
 
 Vamos a scrapear el sitio de Latam para averiguar datos de vuelos en función el origen y destino, fecha y cabina. 
 
-<img src="./img/m3c2-1.png"/>
-
+<img src="./img/m3c2-2.png"/>
 Vamos a scrapear el sitio de Latam para averiguar datos de vuelos. La información que esperamos obtener de cada vuelo es:
 - Horas de salida y llegada (duración)
 
@@ -505,12 +504,11 @@ Paso 2: hacer que el navegador cargue la página web.
 ```python
 driver.get(url)
 ```
-
-<img src="./img/m3c2-2.png"/>
+<img src="./img/m3c2-3.png"/>
 
 paso 3: Extraer información de la pagina. Carguemos la página y analicemos dónde se encuentra la información. Vemos que el bloque de vuelos se encuentra en una `ul` y que cada vuelo es un item de la lista, `li`.
 
-<img src="./img/m3c2-3.png"/>
+<img src="./img/m3c2-4.png"/>
 
 ```python
 #Usaremos el Xpath para obtener la lista de vuelos
@@ -528,7 +526,7 @@ print (vuelos)
 
 Obtengamos la información de la hora de salida, llegada y duración del vuelo
 
-<img src="./img/m3c2-4.png"/>
+<img src="./img/m3c2-5.png"/>
 
 ```python
 #seleccionamos el primer vuelo
