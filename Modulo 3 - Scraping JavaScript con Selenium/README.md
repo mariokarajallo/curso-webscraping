@@ -741,3 +741,206 @@ Introducción Selenium
 [guru99 - Find Element and FindElements by XPath in Selenium WebDriver](https://www.guru99.com/find-element-selenium.html)
 
 # 14. **Interactuando con los elementos** 
+En esta sección veremos cómo obtener la información de las escalas de cada vuelo. Vayamos a la página web y veamos dónde se encuentran esos datos.
+
+> 🛠 Para desplegar esa información, debemos clickear en un `botón`.
+
+## ¡Empecemos!
+
+Vamos a scrapear el sitio de Latam para averiguar datos de vuelos. La información que esperamos obtener de cada vuelo es:
+
+- Horas de salida y llegada (duración)
+- [ahora le sumamos] → Escalas del vuelo
+
+```python
+from selenium import webdriver
+#importampos libreria para cargar el driver automaticamente
+from webdriver_manager.firefox import GeckoDriverManager
+
+url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+```
+
+Necesitamos controladores web para diferentes navegadores web. 
+
+Paso 1: instanciar un **driver** del navegador
+
+```python
+options = webdriver.FirefoxOptions()
+# Podemos agregarle opciones al driver para utilizar los distintos modos del navegador
+options.add_argument('-private')
+driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+```
+
+Paso 2: hacer que el navegador cargue la página web.
+
+```python
+driver.get(url)
+```
+
+paso 3: Extraer información de la pagina. Carguemos la página y analicemos dónde se encuentra la información. Vemos que el bloque de vuelos se encuentra en una `ul` y que cada vuelo es un item de la lista, `li`.
+
+<img src="./img/m3c3-1.png"/>
+
+```python
+#Usaremos el Xpath para obtener la lista de vuelos
+vuelos = driver.find_elements('xpath','//ol/li')
+print (vuelos)
+```
+
+```
+[<selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="7ba3e480-987b-4ee7-951e-bdb77af4522b")>, <selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="77cd6bbf-6e4c-4b75-b52b-bd969bfe567a")>, <selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="003e2b53-f5f1-40a8-ae1e-d95d0148696b")>,
+.
+.
+.]
+```
+
+Obtengamos la información de la hora de salida, llegada y duración del vuelo
+
+<img src="./img/m3c3-2.png"/>
+
+```python
+#seleccionamos el primer vuelo
+vuelo_1=vuelos[0]
+#hora de salida
+hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+print (hora_salida)
+```
+
+```
+10:50
+```
+
+```python
+#hora de llegada
+hora_llegada=vuelo_1.find_element('xpath','.//div[3]/span[1]').text.replace('\n+1','')
+print (hora_llegada)
+```
+
+```
+13:55
+```
+
+```python
+# Duracion del vuelo
+duracion_vuelo= vuelo_1.find_element('xpath','.//div[2]/span[2]').text
+print (duracion_vuelo)
+```
+
+```
+23 h 5 min
+```
+
+Algunos datos a los cuales queremos acceder se encuentran dentro de otro link o al darle clic en un enlace, ejemplo un modal dentro de la pagina. 
+
+Para esto debemos usar `selenium`. Ahora veremos cómo obtener la información de las escalas de cada vuelo, para desplegar esa información de las escalas, debemos clickear un `link` para que se habilite el modal que contiene la información. Seleccionemos:
+
+<img src="./img/m3c3-3.png"/>
+
+```python
+#creamos un objeto, con el link que despliega un modal con la informacion de las escalas
+link_escalas = vuelo_1.find_element('xpath','//div[@class="sc-fYAFcb kdctDt"]//a')
+print (link_escalas)
+```
+
+```
+<selenium.webdriver.remote.webelement.WebElement (session="30b5a596-d633-47be-b92e-51501d732334", element="c0f163fc-4bed-4785-bb6e-d8e0f7649ce0")>
+```
+
+ Para dar clic en el tag a , ya identificado solo ejecutamos el método .click()
+
+```python
+# ahora veremos como se abre el modal
+link_escalas.click()
+```
+
+Automáticamente nos abre el menú de itinerario de vuelo . Y vemos cómo se despliega la información que estamos buscando. ****Notar que cambió el html de la página al hacer click sobre ese botón****
+
+<img src="./img/m3c3-4.jpeg"/>
+
+(imagen de referencia) Ya abierto el modal. Realizamos la ruta para identificar la cantidad de escalas del vuelo. Esta vez utilizamos ‘find_elements’ en plural porque traeremos varios elementos. Y cuando imprimimos paradas “section” nos traerá los tramos del vuelo. 
+
+Para saber la cantidad de escala de nuestro vuelo, debemos seleccionar los segmentos “`section`” que contiene el vuelo, actualmente vemos que las paradas están contenidas en elementos `sections`, así que debemos contabilizar las paradas
+
+<img src="./img/m3c3-5.png"/>
+
+```python
+paradas= link_escalas.find_elements('xpath','//section[@class="sc-fEVUGC gIelIH"]')
+print(paradas)
+```
+
+```
+[<selenium.webdriver.remote.webelement.WebElement (session="30b5a596-d633-47be-b92e-51501d732334", element="7925cac6-dcd6-4095-b814-cb90c2f0b262")>, <selenium.webdriver.remote.webelement.WebElement (session="30b5a596-d633-47be-b92e-51501d732334", element="0c5a1db1-7c65-40db-b24e-e6c591391a78")>]
+```
+
+Para la cantidad de escalas podemos contar los tramos “section” y restar 1 y obtendremos la cantidad de escalas para el vuelo scrapeado.
+
+```python
+escalas=len(paradas)-1
+print(escalas)
+```
+
+```
+1
+```
+
+Paso 4: cerrar el navegador
+
+```python
+driver.close()
+```
+
+### Resumen
+Ahora pudimos obtener la cantidad de escalas interactuando con el navegador. Vemos la importancia de Selenium para poder scrapear sitios en los que la informacion no esta en el HTML planto, inicial que viene al hacer la requests al sitio directamente, si no que aparece a medida que vamos interactuando con los elementos del sitio. 
+
+### Otros ejercicios Resueltos
+
+> 🛠 Reto: del reto anterior agregar las escalas de un vuelo
+(Si están usando Selenium 4, es posible que “find_element_by_xpath” muestre un “deprecated warning” utilizar find_element())
+
+#### Ejemplo 1
+
+Si están usando Selenium 4, es posible que “find_element_by_xpath” muestre un “deprecated warning”. De esta forma pueden evitar ese warning:
+
+```python
+from selenium.webdriver.common.by import By
+vuelos = driver.find_element(by=By.XPATH, value='su_xpath')
+```
+
+#### Ejemplo 2
+
+```python
+
+#deprecated warning
+vuelos = driver.find_elements_by_xpath('//li[@class="sc-eAudoH rtrCi"]')
+vuelo = vuelos[0].find_element_by_xpath('.//div[@class="sc-izvnbC eqFECQ flight-information"]/span[1][@class="sc-gMcBNU gwIRwm"]')
+vuelo.text
+# Close Chrome window
+driver.close()
+```
+
+#### Ejemplo 3
+
+Función para obtener la info de todos los vuelos seleccionados
+
+```python
+def itinerario_vuelo(vuelo):
+    escalas = []
+
+    # Se da click sobre el enlace de escalas
+    boton_escalas = vuelo.find_element_by_xpath('.//div[contains(@class,"eMunVf")]/a')
+    boton_escalas.click()
+
+    time.sleep(0.5)
+
+    secciones = vuelo.find_elements_by_xpath('//section[@data-test="section-info-leg"]')
+    for seccion in secciones:
+        escalas.append(seccion.find_element_by_xpath('//div[contains(@class, "airline-wrapper")]').text)
+
+    time.sleep(0.5)
+
+    # Se cierra la ventana emergente
+    boton_escalas_close = vuelo.find_element_by_xpath('//div[@role="dialog"]/button')
+    boton_escalas_close.click()
+
+    return escalas
+```
