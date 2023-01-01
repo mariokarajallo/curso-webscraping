@@ -4,6 +4,8 @@
 - [Clase 11 Instalación y configuración de Selenium](#11-instalación-y-configuración-de-selenium)
 - [Clase 12 Sitios dinámicos y Selenium](#12-sitios-dinámicos-y-selenium)
 - [Clase 13 Selección de elementos](#13-selección-de-elementos)
+- [Clase 14 Interactuando con los elementos](#14-interactuando-con-elementos)
+
 
 # 11. **Instalación y configuración de Selenium** 
 
@@ -571,7 +573,7 @@ driver.close()
 
 > 🛠 Reto: Obtener fecha de salida, llegada y duración de un vuelo utilizando selenium y Xpath.
 
-Al leer y/o analizar estos ejercicios quizas te pueda ayudar a solucionar algun error que puedas tener en tu propio codigo o ver como otros usuarios resuelven de diferente maneras el mismo problema.
+Al leer y/o analizar estos ejercicios quizas te puedan ayudar a solucionar algun error en tu propio codigo o ver como otros usuarios resuelven de diferentes maneras el mismo problema.
 
 #### Ejercicio 1
 
@@ -737,3 +739,5 @@ Introducción Selenium
 [guru99 - What is Selenium? Introduction to Selenium Automation Testing](https://www.guru99.com/introduction-to-selenium.html)
 
 [guru99 - Find Element and FindElements by XPath in Selenium WebDriver](https://www.guru99.com/find-element-selenium.html)
+
+# 14. **Interactuando con los elementos** 
