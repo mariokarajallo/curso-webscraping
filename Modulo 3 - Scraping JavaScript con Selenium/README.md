@@ -7,6 +7,7 @@
 - [Clase 14 Interactuando con los elementos](#14-interactuando-con-elementos)
 - [Clase 15 Scrapeando escalas y tarifas](#15-scrapeando-escalas-y-tarifas)
 - [Clase 16 Construyendo Funciones](#16-construyendo-funciones)
+- [Clase 17 Construyendo la función para unificar el scraper](#17-construyendo-la-función-para-unificar-el-scraper)
 
 
 # 11. **Instalación y configuración de Selenium** 
@@ -2040,4 +2041,185 @@ def obtener_datos_escala(vuelo):
    
             
     return(info_escalas)
+```
+# 17. **Construyendo la función para unificar el scraper**
+Una vez que tenemos todas las funciones listas de nuestro scraping, debemos de llamarla para poder obtener  información.
+
+Así que todo lo que estuvimos haciendo previamente en las secciones, ahora unificamos en funciones.
+
+Y luego lo llamaremos en una única función principal.
+
+## Empecemos! ✈
+
+Importamos todas las librerías necesarias para el scraping
+
+```python
+from selenium import webdriver
+#importampos libreria para cargar el driver automaticamente
+from webdriver_manager.firefox import GeckoDriverManager
+import time
+
+url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+```
+
+creamos una función que retorna una lista de diccionarios con las distintas tarifas
+
+```python
+def obtener_precios(vuelo):
+    '''
+    Función que retorna una lista de diccionarios con las distintas tarifas
+    '''
+    tarifas= vuelo.find_elements('xpath','.//ol[@class="sc-iAVDmT DwgCo"]/li[@class="sc-jjgyjb buqrVI"]')
+    precios=[]
+    for tarifa in tarifas:
+        #buscamos en cada pocision de la tarifa los siquientes elementos
+        nombre = tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[1]/span[@class="sc-gBSKhj chxCgG"]').text
+        moneda= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[contains(@class,"currency")]').text
+        valor= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[@class="sc-ihiiSJ AoaXI"]').text
+        #guardo los valores que obtengo en un diccionario
+        dict_tarifa={nombre:{'moneda':moneda,'valor':valor}}
+        #guradamos nuestro diccionario con los datos de tarifa a nuestra lia de precio
+        precios.append(dict_tarifa)
+        # print(dict_tarifa)
+    return precios
+```
+
+Función que retorna una lista de diccionarios con la información de las escalas de cada vuelo
+
+```python
+def obtener_datos_escalas(vuelo):
+    '''
+    Función que retorna una lista de diccionarios con la información de 
+    las escalas de cada vuelo
+    '''
+
+    segmentos= vuelo.find_elements('xpath','//div[@class="MuiDialogContent-root sc-fjdhpX jvVjjf"]//section[@class="sc-fEVUGC gIelIH"]')
+    datos_escalas=[]    
+    for segmento in segmentos:
+        #origen
+        salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[1]').text
+        #hora de salida
+        hora_salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[2]').text
+        #destino
+        destino_segmento=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[1]').text
+        #Hora de llegada
+        hora_llegada=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[2]').text
+        #Duracion del vuelo
+        duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-BOulX kmIWrd"]/span[2]').text
+        #Numero de vuelo
+        numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//div[@class="sc-bscRGj iggkUa airline-wrapper"]').text
+        #Modelo de avion
+        modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//span[@class="airplane-code"]').text
+        
+        #el último segmento no tendrá escala por que es el destino final del vuelo
+        if segmento != segmentos[-1]:    
+            #Duracion escala
+            duracion_escala_vuelo=segmento.find_element('xpath','//section[@class="sc-fEVUGC gAwpmW"]//span[@class="time"]').text
+        else:
+            duracion_escala_vuelo=''
+        
+        # Armo un diccionario para almacenar los datos
+        datos_escalas_dict={
+            'salida':salida,
+            'hora_salida':hora_salida,
+            'destino':destino_segmento,
+            'hora_llega':hora_llegada,
+            'duracion':duracion_segmento,
+            'numero_vuelo':numero_vuelo_segmento,
+            'modelo_avion':modelo_avion_segmento,
+            'duracion_escala':duracion_escala_vuelo
+        }
+        datos_escalas.append(datos_escalas_dict)
+
+    return datos_escalas
+```
+
+Función que retorna un diccionario con los horarios de salida y llegada de cada vuelo, incluyendo la duración. 
+
+Nota: la duración del vuelo no es la (hora de llegada - la hora de salida) porque puede haber diferencia de horarios entre el origen y el destino.
+
+```python
+def obtener_tiempos(vuelo):
+    '''
+    Función que retorna un diccionario con los horarios de salida y llegada de cada
+    vuelo, incluyendo la duración. 
+    Nota: la duración del vuelo no es la hora de llegada - la hora de salida porque
+    puede haber diferencia de horarios entre el origen y el destino.
+    '''
+    #hora de salida
+    hora_salida=vuelo.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+    #hora de llegada
+    hora_llegada=vuelo.find_element('xpath','.//div[3]/span[1]').text.replace('\n+1','')
+    # Duracion del vuelo
+    duracion_vuelo= vuelo.find_element('xpath','.//div[2]/span[2]').text
+
+    tiempos_vuelo_dict={
+        'hora_salida':hora_salida,
+        'hora_llegada':hora_llegada,
+        'duracion_vuelo':duracion_vuelo
+    }
+    return tiempos_vuelo_dict
+```
+
+Creamos la función principal donde iniciamos el driver y mandamos los argumentos que necesitan las funciones anteriores
+
+Para tratar con el tiempo de carga de cada página antes de poder examinarla podemos optar por dos soluciones: 
+
+## **`Demora estática`**
+
+En esta sección implementamos uso de la función `time.sleep(n_segundos)` damos un tiempo para que primero se carguen los datos de la pagina y luego de ese tiempo obtener los datos cargados previamente. 
+
+En otras palabras Insertamos la demora estática una vez hemos solicitado la carga de la página
+
+Pero esto es una solo una forma de demora, de esta manera se espera la cantidad x de segundos determinado en la función antes de avanzar con el código. Tenemos otra opción “inteligente” `demora dinamica`, pero lo implementaremos en la siguiente sección.
+
+```python
+def obtener_info(driver):
+    #Usaremos el Xpath para obtener la lista de vuelos
+    vuelos = driver.find_elements('xpath','//ol/li')
+    print(f'Se encontaron {len(vuelos)} vuelos.')
+    print(f'Iniciando Scraping...')
+    info=[]
+    contador=0
+    for vuelo in vuelos:
+        #obtener los tiempos generales de cada vuelo
+        tiempos=obtener_tiempos(vuelo)
+        #clickeamos sobe el link escalas
+        vuelo.find_element('xpath','//div[@class="sc-fYAFcb kdctDt"]//a').click()
+        #esperamos que cargue el contenido
+        time.sleep(10)
+        escalas=obtener_datos_escalas(vuelo)
+        #cerramos el modal
+        driver.find_element('xpath','//*[@id="itinerary-modal-0-dialog-close"]').click()
+        #clickeamos el vuelo para ver los precios
+        vuelo.click()
+        #esperamos que cargue el contenidon de los precios
+        time.sleep(5)
+        precios=obtener_precios(vuelo)
+        #click nuevamente para cerrar los precios que se desplegaron
+        vuelo.click()
+
+        info.append({'precios':precios,'tiempos':tiempos,'escalas':escalas})
+        contador+=1
+        print(f'Analizando {contador} de {len(vuelos)} vuelos')
+
+    return info
+```
+
+inicializamos el driver y llamamos a la función principal `obtener_info` 
+
+```python
+options = webdriver.FirefoxOptions()
+# Podemos agregarle opciones al driver para utilizar los distintos modos del navegador
+options.add_argument('-private')
+driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+driver.get(url)
+time.sleep(5)
+obtener_info(driver)
+```
+
+por ultimo podemos cerrar el navegador
+
+```python
+driver.close()
 ```
