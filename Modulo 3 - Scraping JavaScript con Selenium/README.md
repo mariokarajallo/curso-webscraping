@@ -6,6 +6,7 @@
 - [Clase 13 Selección de elementos](#13-selección-de-elementos)
 - [Clase 14 Interactuando con los elementos](#14-interactuando-con-elementos)
 - [Clase 15 Scrapeando escalas y tarifas](#15-scrapeando-escalas-y-tarifas)
+- [Clase 16 Construyendo Funciones](#16-construyendo-funciones)
 
 
 # 11. **Instalación y configuración de Selenium** 
@@ -1699,3 +1700,5 @@ tarifas = vuelo.find_elements_by_xpath('.//table[@class="fare-options-table"]//t
 for i in range(len(tarifas)):
     print(fare_type[i].text, currency[i].text, tarifas[i].text)
 ```
+
+# 16. **Construyendo Funciones** 
