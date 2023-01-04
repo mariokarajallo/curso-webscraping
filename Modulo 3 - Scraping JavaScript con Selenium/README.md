@@ -5,6 +5,7 @@
 - [Clase 12 Sitios dinámicos y Selenium](#12-sitios-dinámicos-y-selenium)
 - [Clase 13 Selección de elementos](#13-selección-de-elementos)
 - [Clase 14 Interactuando con los elementos](#14-interactuando-con-elementos)
+- [Clase 15 Scrapeando escalas y tarifas](#15-scrapeando-escalas-y-tarifas)
 
 
 # 11. **Instalación y configuración de Selenium** 
@@ -944,3 +945,5 @@ def itinerario_vuelo(vuelo):
 
     return escalas
 ```
+
+# 15. **Scrapeando escalas y tarifas**
