@@ -947,3 +947,755 @@ def itinerario_vuelo(vuelo):
 ```
 
 # 15. **Scrapeando escalas y tarifas**
+
+En esta sección veremos cómo obtener la información de las escalas de cada vuelo.
+
+De cada segmento del modal que nos proporciona un vuelo necesitamos:
+- origen
+- hora de salida
+- destino
+- hora de llegada
+- duración del vuelo
+- numero de vuelo
+- modelo de avión
+- duración de la escala
+
+A simple vista en el código de la pagina no esta al momento de cargar los datos de donde queremos viajar y cuando por lo que debemos hacer clic en un link de la parada del vuelo para que nos aparezcan todas estos datos y poder scrapear.
+
+## ¡Empecemos! ✈
+
+```python
+from selenium import webdriver
+#importampos libreria para cargar el driver automaticamente
+from webdriver_manager.firefox import GeckoDriverManager
+
+url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+```
+
+Necesitamos controladores web para diferentes navegadores web. 
+
+Paso 1: instanciar un **driver** del navegador
+
+```python
+options = webdriver.FirefoxOptions()
+# Podemos agregarle opciones al driver para utilizar los distintos modos del navegador
+options.add_argument('-private')
+driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+```
+
+Paso 2: hacer que el navegador cargue la página web.
+
+```python
+driver.get(url)
+```
+
+paso 3: Extraer información de la pagina. Carguemos la página y analicemos dónde se encuentra la información. Vemos que el bloque de vuelos se encuentra en una `ul` y que cada vuelo es un item de la lista, `li`.
+
+<img src="./img/m3c3-1.png"/>
+
+```python
+#Usaremos el Xpath para obtener la lista de vuelos
+vuelos = driver.find_elements('xpath','//ol/li')
+print (vuelos)
+```
+
+```
+[<selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="7ba3e480-987b-4ee7-951e-bdb77af4522b")>, <selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="77cd6bbf-6e4c-4b75-b52b-bd969bfe567a")>, <selenium.webdriver.remote.webelement.WebElement (session="742d6ba4-917a-4f2b-b3ef-07645908e7c8", element="003e2b53-f5f1-40a8-ae1e-d95d0148696b")>,
+.
+.
+.]
+```
+
+Obtengamos la información de la hora de salida, llegada y duración del vuelo
+
+<img src="./img/m3c3-2.png"/>
+
+```python
+#seleccionamos el primer vuelo
+vuelo_1=vuelos[0]
+#hora de salida
+hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+print (hora_salida)
+```
+
+```
+10:50
+```
+
+```python
+#hora de llegada
+hora_llegada=vuelo_1.find_element('xpath','.//div[3]/span[1]').text.replace('\n+1','')
+print (hora_llegada)
+```
+
+```
+13:55
+```
+
+```python
+# Duracion del vuelo
+duracion_vuelo= vuelo_1.find_element('xpath','.//div[2]/span[2]').text
+print (duracion_vuelo)
+```
+
+```
+23 h 5 min
+```
+
+Algunos datos a los cuales queremos acceder se encuentran dentro de otro link o al darle clic en un enlace, ejemplo un modal dentro de la pagina. 
+
+Para esto debemos usar `selenium`. Ahora veremos cómo obtener la información de las escalas de cada vuelo, para desplegar esa información de las escalas, debemos clickear un `link` para que se habilite el modal que contiene la información. Seleccionemos:
+
+<img src="./img/m3c3-3.png"/>
+
+```python
+#creamos un objeto, con el link que despliega un modal con la informacion de las escalas
+link_escalas = vuelo_1.find_element('xpath','//div[@class="sc-fYAFcb kdctDt"]//a')
+print (link_escalas)
+```
+
+```
+<selenium.webdriver.remote.webelement.WebElement (session="30b5a596-d633-47be-b92e-51501d732334", element="c0f163fc-4bed-4785-bb6e-d8e0f7649ce0")>
+```
+
+ Para dar clic en el tag a , ya identificado solo ejecutamos el método .click()
+
+```python
+# ahora veremos como se abre el modal
+link_escalas.click()
+```
+
+Automáticamente nos abre el menú de itinerario de vuelo . Y vemos cómo se despliega la información que estamos buscando. ****Notar que cambió el html de la página al hacer click sobre ese botón****
+
+<img src="./img/m3c3-4.jpeg"/>
+
+(imagen de referencia) Ya abierto el modal. Realizamos la ruta para identificar la cantidad de escalas del vuelo. Esta vez utilizamos ‘find_elements’ en plural porque traeremos varios elementos. Y cuando imprimimos paradas “section” nos traerá los tramos del vuelo. 
+
+Para saber la cantidad de escala de nuestro vuelo, debemos seleccionar los segmentos “`section`” que contiene el vuelo, actualmente vemos que las paradas están contenidas en elementos `sections`, así que debemos contabilizar las paradas
+
+<img src="./img/m3c3-5.png"/>
+
+```python
+paradas= link_escalas.find_elements('xpath','//section[@class="sc-fEVUGC gIelIH"]')
+print(paradas)
+```
+
+```
+[<selenium.webdriver.remote.webelement.WebElement (session="30b5a596-d633-47be-b92e-51501d732334", element="7925cac6-dcd6-4095-b814-cb90c2f0b262")>, <selenium.webdriver.remote.webelement.WebElement (session="30b5a596-d633-47be-b92e-51501d732334", element="0c5a1db1-7c65-40db-b24e-e6c591391a78")>]
+```
+
+Para la cantidad de escalas podemos contar los tramos “section” y restar 1 y obtendremos la cantidad de escalas para el vuelo scrapeado.
+
+```python
+escalas=len(paradas)-1
+print(escalas)
+```
+
+```
+1
+```
+--- hasta aqui es lo mismo que la seccion anterior ---
+
+Ahora buscaremos obtener:
+
+- destino
+- hora de llegada
+- duración del vuelo
+- duración de la escala. Tip: el último segmento no tendrá esta información
+- número del vuelo
+- modelo del avión
+
+<img src="./img/m3c4-1.png"/>
+
+```python
+#Recorremos los segmentos del modal que nos proporciona un vuelo
+for i in segmentos:
+    segmento = i
+    salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[1]').text
+    hora_salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[2]').text
+    duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-BOulX kmIWrd"]/span[2]').text
+    destino_segmento=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[1]').text
+    numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//div[@class="sc-bscRGj iggkUa airline-wrapper"]').text
+    modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//span[@class="airplane-code"]').text
+    
+    print(f'Salida:{salida}\nHora Salida:{hora_salida}\nDuracion: {duracion_segmento}\nLlegada:{destino_segmento}\nNumero de vuelo:{numero_vuelo_segmento}\nModelo Avion:{modelo_avion_segmento}\n')
+```
+nos dara como resultado algo similar a esto: 
+```
+Salida:ASU
+Hora Salida:10:50
+Duracion: 2 h 50 min
+Llegada:SCL
+Numero de vuelo:LA1324
+Modelo Avion:Airbus A320
+
+Salida:SCL
+Hora Salida:21:20
+Duracion: 12 h 35 min
+Llegada:MAD
+Numero de vuelo:LA706
+Modelo Avion:Boeing B787-9
+
+```
+
+```python
+#obtenemos la duracion del vuelo
+duracion_escala_vuelo=link_escalas.find_element('xpath','//section[@class="sc-fEVUGC gAwpmW"]//span[@class="time"]').text
+print(f'Duracion Escala:{duracion_escala_vuelo}')
+```
+
+```
+Duracion Escala:7 h 40 min
+```
+
+Una vez que hayamos obtenido toda la información, debemos cerrar el modal/pop-up.
+
+```python
+driver.find_element('xpath','//*[@id="itinerary-modal-0-dialog-close"]').click()
+```
+
+Por último debemos obtener la información de las tarifas. Para eso, debemos clickear sobre el vuelo (sobre cualquier parte)
+
+<img src="./img/m3c4-2.png"/>
+
+```python
+vuelo_1.click()
+```
+
+La información de los precios para cada tarifa está contenida en una tablas (ol). Tenemos los precios y categorías de cada una de las tarifas
+
+<img src="./img/m3c4-3.png"/>
+
+```python
+tarifas= vuelo_1.find_elements('xpath','.//ol[@class="sc-iAVDmT DwgCo"]/li[@class="sc-jjgyjb buqrVI"]')
+print (tarifas)
+```
+
+```
+[<selenium.webdriver.remote.webelement.WebElement (session="37a80af2-e0a0-4b71-8c4a-435a3dcf3c7d", element="a5816e6d-561b-4548-9d44-fc3a18c8d2f4")>, <selenium.webdriver.remote.webelement.WebElement (session="37a80af2-e0a0-4b71-8c4a-435a3dcf3c7d", element="0b19a154-b134-494f-ae6e-90df1046ca7f")>, <selenium.webdriver.remote.webelement.WebElement (session="37a80af2-e0a0-4b71-8c4a-435a3dcf3c7d", element="6917ddfc-b544-4112-b241-4c70a68dfd72")>]
+```
+
+Obtenemos los precios, donde creamos una lista, de precios con la clave:valor por cada categoría de precio
+
+```python
+precios=[]
+for tarifa in tarifas:
+    #buscamos en cada pocision de la tarifa los siquientes elementos
+    nombre = tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[1]/span[@class="sc-gBSKhj chxCgG"]').text
+    moneda= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[contains(@class,"currency")]').text
+    valor= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[@class="sc-ihiiSJ AoaXI"]').text
+    #guardo los valores que obtengo en un diccionario
+    dict_tarifa={nombre:{'moneda':moneda,'valor':valor}}
+    #guradamos nuestro diccionario con los datos de tarifa a nuestra lia de precio
+    precios.append(dict_tarifa)
+    print(dict_tarifa)
+    # print(f'Nombre Tarfia:{nombre}\nMoneda:{moneda}\nPrecio:{valor}\n\n')
+```
+
+```
+{'light': {'moneda': 'ARS', 'valor': '344.043,30'}}
+{'plus': {'moneda': 'ARS', 'valor': '384.483,30'}}
+{'top': {'moneda': 'ARS', 'valor': '425.935,30'}}
+```
+
+Por el momento es todo. Cerramos el navegador (driver)
+
+Paso 4: cerrar el navegador
+
+```python
+driver.close()
+```
+
+---
+
+> 🛠 Una forma fácil de visualizar qué es lo que estamos extrayendo en el mismo notebook es:
+
+```python
+#importar la libreria
+from IPython.display import HTML, display_html
+
+display_html(HTML(segment.get_attribute('innerHTML')))
+
+```
+
+donde segment es un objeto de clase`selenium.webdriver`, dependera de que clase de driver utilicen.
+
+El output no es el más estético de todos pero nos puede servir para entender qué estamos extrayendo.
+
+<img src="./img/m3c4-4.jpeg"/>
+
+### Otros ejercicios resuelto por otros Alumnos del curso
+
+> 🛠 Reto: obtener El destino de cada escala, la hora de llegada de cada escala, la duración de cada vuelo, la duración de la escala, el numero de vuelo, y el modelo del avión.
+
+>💡 (Si están usando Selenium 4, es posible que “find_element_by_xpath” muestre un “deprecated warning” utilizar find_element())
+
+#### Ejemplo1
+
+Va mi aporte válido para mayo 2022. Obtengo 3 tablas (vuelos, tarifas y segmentos) que luego puedo vincular en una base de datos con el id del vuelo, para hacer el análisis:
+
+```python
+flights_data = []
+tariffs_data = []
+segments_data = []
+
+flights = driver.find_elements(By.XPATH, '//ol[@aria-label="Vuelos disponibles."]//div[contains(@id, "WrapperCardFlight")]')
+for idf, flight in enumerate(flights):
+    
+    # Get flights data
+    print(f'Getting flight {idf} data...')
+    departure_time = flight.find_element(By.XPATH, './/div[contains(@class, "flight-information")][1]/span').text
+    flight_duration = flight.find_element(By.XPATH, './/div[contains(@class, "flight-duration")]/span[2]').text
+    arrival_time_el = flight.find_element(By.XPATH, './/div[contains(@class, "flight-information")][2]/span')
+    arrival_time_child = arrival_time_el.find_element(By.XPATH, './*').text
+    arrival_time = arrival_time_el.text.replace(arrival_time_child, '').strip()
+
+    flights_data.append({
+        'flight_id': idf,
+        'departure_time' : departure_time,
+        'flight_duration' : flight_duration,
+        'arrival_time' : arrival_time
+        })
+    print(f'Flight {idf} data appended\n')
+
+    # Get tariffs:
+    print(f'Flight {idf} - Getting tariffs...')
+    flight.click()
+    tariffs = flight.find_elements(By.XPATH, '//ol[@aria-label="Tarifas disponibles."]/li[contains(@id, "WrapperBundleCardbundle-detail")]')
+    for idt, tariff in enumerate(tariffs):
+        tariff_name = tariff.find_elements(By.XPATH, './/div[@aria-hidden="true"]//span')[0].text.replace('\n', '')
+        tariff_price = tariff.find_element(By.XPATH, './/span[contains(@class, "displayAmount")]').text
+        tariffs_data.append({
+            'flight_id': idf,
+            'tariff_id': idt,
+            'tariff_name': tariff_name,
+            'tariff_price' : tariff_price
+        })
+    print(f'Flight {idf} - Tariff {tariff_name} data appended\n')
+    
+    # Hide tariffs
+    tariffs_close_btn = flight.find_element(By.XPATH, './/button[contains(@class, "MuiButtonBase-root")]')
+    tariffs_close_btn.click()
+
+    # Get segments:
+    print(f'Getting segments...')
+    segments_open_btn = flight.find_element(By.XPATH, './/a[contains(@id, "itinerary-modal")]')
+    segments_open_btn.click()
+    sleep(2)
+    segments = flight.find_elements(By.XPATH, '//section[contains(@data-test, "section-info-leg")]')
+    for ids, segment in enumerate(segments):
+        print(f'Flight {idf} - Getting segment {ids} data...')
+        flight_number = segment.find_element(By.XPATH, './/div[contains(@class, "airline-wrapper")]').text.replace('*', '')
+        airplane_code = segment.find_element(By.XPATH, './/span[@class="airplane-code"]').text
+        origin_airport = segment.find_element(By.XPATH, './/span[contains(@class, "pathInfo-origin")]/following-sibling::div[contains(@class, "iataCode")]/span[not(@class="time")]').text
+        origin_time = segment.find_element(By.XPATH, './/span[contains(@class, "pathInfo-origin")]/following-sibling::div[contains(@class, "iataCode")]/span[@class="time"]').text
+        segment_duration = segment.find_element(By.XPATH, './/span[contains(@class, "pathInfo-duration")]/following-sibling::span[@class="time"]').text
+        destination_airport = segment.find_element(By.XPATH, './/span[contains(@class, "pathInfo-destination")]/following-sibling::div[contains(@class, "iataCode")]/span[not(@class="time")]').text
+        destination_time = segment.find_element(By.XPATH, './/span[contains(@class, "pathInfo-destination")]/following-sibling::div[contains(@class, "iataCode")]/span[@class="time"]').text
+        connections = segment.find_elements(By.XPATH, './following-sibling::section[contains(@data-test, "section-info-connection")]')
+        if connections:
+            connection_city = connections[0].find_element(By.XPATH, './/span[@class="connection-text"]').text.replace('Conexión ', '')
+            connection_duration = connections[0].find_element(By.XPATH, './/span[@class="time"]').text
+        else:
+            connection_city = ''
+            connection_duration = ''
+
+        segments_data.append({
+            'flight_id': idf,
+            'segment_id' : ids,
+            'flight_number' : flight_number,
+            'airplane_code' : airplane_code,
+            'origin_airport' : origin_airport,
+            'origin_time' : origin_time,
+            'segment_duration' : segment_duration,
+            'destination_airport' : destination_airport,
+            'destination_time' : destination_time,
+            'connection_city' : connection_city,
+            'connection_duration' : connection_duration
+        })
+        print(f'Flight {idf} - Segment {ids} data appended\n')
+
+    # Hide segments
+    segments_close_btn = driver.find_element(By.XPATH, '//div[contains(@class, "MuiDialog-container")]//button[contains(@class, "MuiButtonBase-root")]')
+    segments_close_btn.click()
+```
+
+```python
+import pandas as pd
+
+df_flights = pd.json_normalize(flights_data)
+df_flights.to_csv('flights.csv', sep=';')
+
+df_tariffs = pd.json_normalize(tariffs_data)
+df_tariffs.to_csv('tariffs.csv', sep=';')
+
+df_segments = pd.json_normalize(segments_data)
+df_segments.to_csv('segments.csv', sep=';')
+```
+
+#### Ejemplo2
+
+Solución del reto a Julio de 2021
+
+```python
+# obtener todas las escalas
+stops = driver.find_elements_by_xpath('//section[@class="sc-jWxkHr fPpyxb"]')
+
+# iterar sobre las escalas y extraer la información
+for s, stop in enumerate(stops):
+    dep = stop.find_element_by_xpath('.//div[@class="sc-geAPOV biWURZ"]')
+    dep_city = dep.find_element_by_xpath('.//div[@class="iataCode"]//span').text
+    dep_time = dep.find_element_by_xpath('.//div[@class="iataCode"]//span[@class="time"]').text
+    dep_aport =  dep.find_element_by_xpath('.//span[@class="ariport-name"]').text
+    
+    flight_time = stop.find_element_by_xpath('.//div[@class="sc-bJTOcE iJlaOT"]//span[@class="time"]').text
+    airplane = stop.find_element_by_xpath('.//span[@class="airplane-code"]').text
+    
+    arr = stop.find_element_by_xpath('.//div[@class="sc-PLyBE iVAtbp"]')
+    arr_city = arr.find_element_by_xpath('.//div[@class="iataCode"]//span').text
+    arr_time = arr.find_element_by_xpath('.//div[@class="iataCode"]//span[@class="time"]').text
+    arr_aport =  arr.find_element_by_xpath('.//span[@class="ariport-name"]').text
+```
+
+imprimiendo se obtiene algo como:
+
+Stop 1
+
+Airplane: Airbus A321
+
+Departure: BOG(El Dorado Intl.) 13:00
+
+Flight time: 6 h 10 min
+
+Arrival: GRU(Guarulhos Intl.) 21:10
+
+Stop 2
+
+Airplane: Boeing B787-9
+
+Departure: GRU(Guarulhos Intl.) 23:10
+
+Flight time: 9 h 45 min
+
+Arrival: MAD(Barajas Intl.) 13:55
+
+Para las tarifas fue mucho más sencillo con el código que tiene ahora el sitio
+
+```python
+# click en el vuelo
+flights[0].find_element_by_xpath('.//div[@class="sc-hizQCF mUhbx"]').click()
+
+# definir e iterar por las tarifas
+fares = driver.find_elements_by_xpath('//div[@class="sc-dTsoBL izUUnZ"]')
+for f in fares:
+    print(
+        f.find_element_by_xpath('.//span[@class="sc-ileJJU bxvQhO displayAmount"]').text
+    )
+```
+
+$334.468
+
+$369.953
+
+$426.728
+
+$1.484.474
+
+#### Ejemplo3
+
+```python
+# Trayecto 1
+segmento = segmentos[0]
+
+horarios = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/time')
+horario_salida = horarios[0].text
+horario_llegada = horarios[1].text
+
+lugares = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/abbr')
+lugar_salida = lugares[0].text
+lugar_llegada = lugares[-1].text
+
+informacion_1 = segmento.find_element_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/span').text
+
+duracion_vuelo_1 = segmento.find_element_by_xpath('.//span[@class="sc-esjQYD dMquDU"]/time').get_attribute('datetime')
+
+n_vuelo_1 = segmento.find_element_by_xpath('.//div[@class="airline-flight-details"]//b').text
+
+n_avion = segmento.find_element_by_xpath('.//div[@class="airline-flight-details"]/span[@class="sc-gzOgki uTyOl"]').text
+
+tiempos = segmento.find_elements_by_xpath('.//span[@class="sc-esjQYD dMquDU"]//time')
+tiempo_primer_trayecto = tiempos[0].text
+tiempo_en_aerolinea = tiempos[-1].text
+```
+
+```python
+# Trayecto 2
+segmento = segmentos[-1]
+
+horarios = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/time')
+horario_salida = horarios[0].text
+horario_llegada = horarios[1].text
+
+lugares = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/abbr')
+lugar_llegada = lugares[-1].text
+
+informacion_1 = segmento.find_element_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/span').text
+
+duracion_vuelo_1 = segmento.find_element_by_xpath('.//span[@class="sc-esjQYD dMquDU"]/time').get_attribute('datetime')
+
+n_vuelo_1 = segmento.find_element_by_xpath('.//div[@class="airline-flight-details"]//b').text
+
+n_avion = segmento.find_element_by_xpath('.//div[@class="airline-flight-details"]/span[@class="sc-gzOgki uTyOl"]').text
+
+tiempos = segmento.find_elements_by_xpath('.//span[@class="sc-esjQYD dMquDU"]//time')
+tiempo_segundo_trayecto = tiempos[-1].text
+```
+
+```python
+# cerrar la ventana de escalas
+boton_cerrar_escalas = driver.find_element_by_xpath('//div[@class="modal-header sc-dnqmqq cGfTsx"]/button')
+boton_cerrar_escalas.click()
+
+# abrir la ventana de precios economy
+boton_precios = vuelo.find_element_by_xpath('.//div[@class="flight-container"]/button')
+boton_precios.click()
+```
+
+```python
+# Datos de precios economy
+tarifas_economy = vuelo.find_elements_by_xpath('.//div[@class="fares-table-wrapper"]//tfoot//span[@class="price"]/span[@class="value"]')
+tarifa_1 = precios_economy[0].text
+tarifa_2 = precios_economy[1].text
+tarifa_3 = precios_economy[-1].text
+
+# abrir ventana de precios premium business
+boton_precios = vuelo.find_element_by_xpath('.//div[@class="ReactCollapse--content"]//li[@id="J"]/button')
+boton_precios.click()
+
+# Datos de precios premium business
+tarifas_premium = vuelo.find_elements_by_xpath('.//div[@class="fares-table-wrapper"]//tfoot//span[@class="price"]/span[@class="value"]')
+tarifa_1 = precios_economy[0].text
+tarifa_2 = precios_economy[1].text
+```
+
+#### Ejemplo4 (con otra web de vuelos)
+
+Tuve que importar time porque en aeroméxico tarda un momento en cerrar y abrir el menú y si no esperas se rompe.
+
+```python
+from selenium import webdriver
+import time
+
+driver = webdriver.Firefox()
+URL = 'https://aeromexico.com/es-mx/reserva/opciones?itinerary=MEX_JFK_2020-06-26&leg=1&travelers=A1_C0_I0_PH0_PC0'
+
+driver.get(URL)
+flights = driver.find_elements_by_xpath('//table[@class="FlightOptionsGrid-table"]/tbody/tr')
+
+for i, flight in enumerate(flights):
+    departure_and_arrival = flight.find_elements_by_xpath('.//div[@class="FlightOptionsTimeline-time"]')
+    departure = departure_and_arrival[0].text
+    arrival = departure_and_arrival[1].text
+    flight_duration = flight.find_element_by_xpath('.//p[@class="FlightOptionsFlightInfoSummary-summary"][1]/span[last()]')
+    
+    button_details = flight.find_element_by_xpath('.//button[@class="FlightOptionsFlightInfo-btnWrapper"]')
+    button_details.click()
+    time.sleep(1)
+    segments = button_details.find_elements_by_xpath('//div[@class="FlightDetailsSegment"]')
+    button_close = button_details.find_element_by_xpath('//button[contains(@class, "Modal-close")]')
+    
+    segments_with_downtime = segments[:-1]
+    last_segment = segments[-1]
+    
+    print(f'Viaje {i+1}:') 
+    for segment in segments_with_downtime:
+        segment_departure_and_arrival_destinations = segment.find_elements_by_xpath('.//div[@class="FlightDetailsSegment-cityPair"]/div/div[@class="FlightDetailsSegment-flightCity"]')
+        segment_departure_destination = segment_departure_and_arrival_destinations[0].get_attribute('textContent')
+        segment_arrival_destination = segment_departure_and_arrival_destinations[1].get_attribute('textContent')
+        
+        segment_departure_and_arrival = segment.find_elements_by_xpath('.//div[@class="FlightDetailsSegment-cityPair"]/div/div[@class="FlightDetailsSegment-flightTime"]')
+        segment_departure = segment_departure_and_arrival[0].get_attribute('textContent')
+        segment_arrival = segment_departure_and_arrival[1].get_attribute('textContent')
+        
+        downtime = segment.find_element_by_xpath('.//div[@class="FlightDetailsSegment-layover"]/span/div/span')
+        print(f'Lugar de partida: {segment_departure_destination}')
+        print(f'Lugar de destino: {segment_arrival_destination}')
+        print(f'Hora de salida: {segment_departure}')
+        print(f'Hora de llegada: {segment_arrival}')
+        print(f'--- --- ---{downtime.get_attribute("textContent")} --- --- ---')
+        print()
+        
+    last_departure_both = last_segment.find_elements_by_xpath('.//div[@class="FlightDetailsSegment-cityPair"]/div/div[@class="FlightDetailsSegment-flightCity"]')
+    last_departure = last_departure_both[0]
+    last_destination = last_departure_both[1]
+    print(f'Lugar de partida: {last_departure.text}')
+    print(f'Lugar de destino: {last_destination.text}')
+    print(f'Hora de salida: {departure}')
+    print(f'Hora de llegada: {arrival}')
+    print(f'El vuelo dura: {flight_duration.text}')
+    print()
+    print()
+    button_close.click()
+    time.sleep(1)
+```
+
+#### Ejemplo5
+
+Cuando hay más de un elemento que hace match cuando realizas un querie con XPATH , este solo te traerá el primer elemento. Segmento 1:
+
+```python
+a=segmento.find_elements_by_xpath('.//span[@class="sc-hXRMBi gVvErD"]')
+a_1= a[0].text
+a_2= a[1].text
+print(a_1)
+print(a_2)
+
+# Obtener Hora de salida y la hora de llegada del primer y segundo aeropueto
+tiempo = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/time')
+ida = tiempo[0].get_attribute('datetime')
+llegada = tiempo[1].get_attribute('datetime')
+print(ida)
+print(llegada)
+
+# Tiempo estimado de vuelo
+segmento.find_element_by_xpath('.//span[@class="sc-esjQYD dMquDU"]/time').get_attribute('datetime')
+
+# Siglas del aeropuerto de llegada
+siglas = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/abbr')
+print(f'{siglas[1].get_attribute("title")} y {siglas[0].get_attribute("title")}')
+
+#Modelo del avion
+segmento.find_element_by_xpath('.//span[@class="sc-gzOgki uTyOl"]').text
+```
+
+Segmento intermedio:
+
+```python
+#Segundo segmento: Trasbordo
+segmento_1= segmentos[1]
+
+#Tiempo de espera del trasbordo
+segmento_1.find_element_by_xpath('.//span[@class="sc-esjQYD dMquDU"]/time').get_attribute('datetime')
+```
+
+Tercer segmento:
+
+```python
+#Tercer segmento: llegada.
+segmento2= segmentos[2]
+
+b = segmento2.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/abbr')
+b1=b[0].get_attribute('title')
+b2=b[1].get_attribute('title')
+print(b1)
+print(b2)
+
+# Hora de llegada f
+tiempo2 = segmento2.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/time')
+ida1=tiempo2[0].get_attribute('datetime')
+llegada2=tiempo2[1].get_attribute('datetime')
+print(ida1)
+print(llegada2)
+
+#Aeropuertos
+aero = segmento2.find_elements_by_xpath('.//span[@class="sc-hXRMBi gVvErD"]')
+aero_1= aero[0].text
+aero_2= aero[1].text
+print(aero_1)
+print(aero_2)
+
+#Tiempo de viaje
+segmento2.find_element_by_xpath('.//span[@class="sc-esjQYD dMquDU"]/time').get_attribute('datetime')
+```
+
+#### Ejemplo6
+
+```python
+escalas_tag = vuelo.find_elements_by_xpath('//div[@class="sc-cLQEGU dnKRNG"]//time')    
+escalas = list(map(lambda escala : escala.get_attribute('datetime') , escalas_tag))
+
+for i, segmento in enumerate(segmentos):
+    global escalas
+    aeropuertos_tag = segmento.find_elements_by_xpath('.//div[@class="sc-iujRgT jEtESl"]//abbr[@class="sc-hrWEMg hlCkST"]')
+    aeropuertos = list(map(lambda aeropuerto : aeropuerto.get_attribute('title') , aeropuertos_tag))
+    horas_tag = segmento.find_elements_by_xpath('.//div[@class="sc-iujRgT jEtESl"]//time')
+    horas = list(map(lambda hora : hora.get_attribute('datetime') , horas_tag))
+    duracion = segmento.find_element_by_xpath('.//div[@class="sc-bMVAic hShZwU"]//time').get_attribute('datetime')
+    modelo = segmento.find_element_by_xpath('.//div[@class="sc-hMFtBS bGZqFm"]//span[@class="sc-gzOgki uTyOl"]').text
+    vuelo = segmento.find_element_by_xpath('.//div[@class="sc-hMFtBS bGZqFm"]//b').text
+    print(f'Tramo N# {i+1}: vuelo {vuelo}, nave {modelo}.')
+    print(f'salida a las {horas[0]} desde el aeropuerto {aeropuertos[0]}, llegada a las {horas[1]} al aeropuerto {aeropuertos[1]}.')
+    print(f'Duracion del tramo: {duracion}')
+    if i < len(segmentos) - 1:
+        print(f'Duracion de escala: {escalas[i]}')
+    
+#Output:
+Tramo N# 1: vuelo LA8013, nave Airbus 320-200.
+salida a las 18:00 desde el aeropuerto EZE, llegada a las 20:50 al aeropuerto GRU.
+Duracion del tramo: 2:50
+Duracion de escala: 1:50
+Tramo N# 2: vuelo LA8064, nave Airbus 350-900.
+salida a las 22:40 desde el aeropuerto GRU, llegada a las 13:35 al aeropuerto MAD.
+Duracion del tramo: 9:55
+```
+
+```python
+tarifas_tag = vuelo.find_elements_by_xpath('.//ul[@class="selection-tabs-fare-list"]//span[@class="price"]')
+monedas = list(map(lambda tarifa : tarifa.find_element_by_xpath('./span[@class="currency-symbol"]').text , tarifas_tag))
+valores = list(map(lambda tarifa : tarifa.find_element_by_xpath('./span[@class="value"]/span').text , tarifas_tag))
+tarifas = list(map(lambda moneda, valor : f'{moneda} {valor}', monedas, valores))
+categorias_tag = vuelo.find_elements_by_xpath('.//div[@class="selection-tabs"]//h4[@class="fare-category"]/span')
+categorias = list(map(lambda categoria : categoria.text , categorias_tag)) 
+tarifa_por_categoria = dict(zip(categorias, tarifas))
+tarifa_por_categoria
+
+**output:**
+
+{'Light': 'ARS 51.069,80', 'Plus': 'ARS 56.173,00', 'Top': 'ARS 109.961,75'}
+```
+
+#### Ejemplo7
+
+```python
+# Vamos a ver el origen de cada escala
+# Reto! El destino de cada escala, la hora de llegada de cada escala, la duracion de cada vuelo, la duracion de la escala, el numero de vuelo, y el modelo del avion.
+
+for segmento in segmentos:
+
+    city = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/abbr')
+    de_city = city[0].text
+    ar_city = city[1].text
+
+    schedule = segmento.find_elements_by_xpath('.//div[@class="sc-bwCtUz iybVbT"]/time')
+    de_schedule = schedule[0].get_attribute('datetime')
+    ar_schedule = schedule[1].get_attribute('datetime')
+
+    duration = segmento.find_element_by_xpath('.//span[@class="sc-esjQYD dMquDU"]/time').get_attribute('datetime')
+
+    flight_no = segmento.find_element_by_xpath('.//div[@class="airline-flight-details"]/b').text
+    airplane = segmento.find_element_by_xpath('.//div[@class="airline-flight-details"]/span[@class="sc-gzOgki uTyOl"]').text
+
+    print(de_city, de_schedule, ar_city, ar_schedule, f'Duracion del vuelo {duration}', flight_no, airplane)
+
+duration_scale = vuelo.find_element_by_xpath('//div[@class="sc-cLQEGU dnKRNG"]//span[@class="sc-esjQYD dMquDU"]/time').get_attribute('datetime')
+print(f'Con escala de {duration_scale}')
+```
+
+```python
+# Informacion de las tarifas
+# Lo primero es cerrar la ventana a la que se le habia dado click
+driver.find_element_by_xpath('//div[@class="modal-header sc-dnqmqq cGfTsx"]/button').click()
+# Ahora hay que click sobre el vuelo
+vuelo.find_element_by_xpath('.//div[@class="flight-container"]/button').click()
+```
+
+```python
+# Encontrar la moneda y el valor del vuelo
+
+fare_type = vuelo.find_elements_by_xpath('.//table[@class="fare-options-table"]//thead//th[contains(@class, "fare")]//span')
+currency = vuelo.find_elements_by_xpath('.//table[@class="fare-options-table"]//tfoot//td[contains(@class, "fare")]//span[@class="currency-symbol"]')
+tarifas = vuelo.find_elements_by_xpath('.//table[@class="fare-options-table"]//tfoot//td[contains(@class, "fare")]//span[@class="value"]')
+
+for i in range(len(tarifas)):
+    print(fare_type[i].text, currency[i].text, tarifas[i].text)
+```
