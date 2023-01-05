@@ -8,9 +8,11 @@
 - [Clase 15 Scrapeando escalas y tarifas](#15-scrapeando-escalas-y-tarifas)
 - [Clase 16 Construyendo Funciones](#16-construyendo-funciones)
 - [Clase 17 Construyendo la función para unificar el scraper](#17-construyendo-la-función-para-unificar-el-scraper)
+- [Clase 18 Demoras dinámicas](#18-demoras-dinámicas)
 
 
 # 11. **Instalación y configuración de Selenium** 
+
 
 Para poder utilizar Selenium con Python hay que seguir una serie de pasos que están detallados a continuación.
 
@@ -2223,3 +2225,4 @@ por ultimo podemos cerrar el navegador
 ```python
 driver.close()
 ```
+# 18. **Demoras dinámicas** 
