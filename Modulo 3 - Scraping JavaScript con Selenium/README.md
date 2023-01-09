@@ -1746,9 +1746,9 @@ def obtener_precios(vuelo):
     precios=[]
     for tarifa in tarifas:
         #buscamos en cada pocision de la tarifa los siquientes elementos
-        nombre = tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[1]/span[@class="sc-gBSKhj chxCgG"]').text
-        moneda= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[contains(@class,"currency")]').text
-        valor= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[@class="sc-ihiiSJ AoaXI"]').text
+        nombre = tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[1]/span[@class="sc-fhiYOA iwcbaW"]').text
+        moneda= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[contains(@class,"currency")]').text
+        valor= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[@class="sc-ckYZGd grNCid"]').text
         #guardo los valores que obtengo en un diccionario
         dict_tarifa={nombre:{'moneda':moneda,'valor':valor}}
         #guradamos nuestro diccionario con los datos de tarifa a nuestra lia de precio
@@ -1763,31 +1763,25 @@ def obtener_datos_escalas(vuelo):
     Función que retorna una lista de diccionarios con la información de 
     las escalas de cada vuelo
     '''
-
-    segmentos= vuelo.find_elements('xpath','//div[@class="MuiDialogContent-root sc-fjdhpX jvVjjf"]//section[@class="sc-fEVUGC gIelIH"]')
-    datos_escalas=[]    
+    # seleccionamos los elementos pertencientes a los vuelos antes de las escalas
+    segmentos= vuelo.find_elements('xpath','//section[@class="sc-fGSyRc fCuylQ"]')
+    datos_escalas=[]
+    duracion_escalas_dic={}    
     for segmento in segmentos:
         #origen
-        salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[1]').text
+        salida=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[1]').text
         #hora de salida
-        hora_salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[2]').text
+        hora_salida=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[2]').text
         #destino
-        destino_segmento=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[1]').text
+        destino_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[1]').text
         #Hora de llegada
-        hora_llegada=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[2]').text
+        hora_llegada=segmento.find_element('xpath','.//div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[2]').text
         #Duracion del vuelo
-        duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-BOulX kmIWrd"]/span[2]').text
+        duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-ewMkZo hQNSAX"]/span[2]').text
         #Numero de vuelo
-        numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//div[@class="sc-bscRGj iggkUa airline-wrapper"]').text
+        numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-dzQEYZ dslPlz airline-wrapper"]').text
         #Modelo de avion
-        modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//span[@class="airplane-code"]').text
-        
-        #el último segmento no tendrá escala por que es el destino final del vuelo
-        if segmento != segmentos[-1]:    
-            #Duracion escala
-            duracion_escala_vuelo=link_escalas.find_element('xpath','//section[@class="sc-fEVUGC gAwpmW"]//span[@class="time"]').text
-        else:
-            duracion_escala_vuelo=''
+        modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-sVRsr eXYUTi"]//span[@class="airplane-code"]').text
         
         # Armo un diccionario para almacenar los datos
         datos_escalas_dict={
@@ -1797,10 +1791,25 @@ def obtener_datos_escalas(vuelo):
             'hora_llega':hora_llegada,
             'duracion':duracion_segmento,
             'numero_vuelo':numero_vuelo_segmento,
-            'modelo_avion':modelo_avion_segmento,
-            'duracion_escala':duracion_escala_vuelo
+            'modelo_avion':modelo_avion_segmento
         }
         datos_escalas.append(datos_escalas_dict)
+    
+    # seleccionamos los segmentos pertencientes a las escalas
+    escalas_vuelo=vuelo.find_elements('xpath','//section[@class="sc-kiXyGy sc-eZXMBi dKgCnQ connectionInfo"]')
+    for num_escala, escala in enumerate(escalas_vuelo):
+        escala=escala
+        #conexion de la escala
+        escala_vuelo=escala.find_element('xpath','.//div[@class="sc-ekQYnd cByWfv"]//span[@class="connection-text"]').text
+        #duracion de la escala
+        duracion_escala_vuelo=escala.find_element('xpath','.//div[@class="sc-ekQYnd cByWfv"]//span[@class="time"]').text
+        # guardamos en un diccionario la escala actual
+        duracion_escalas={f'Escala {num_escala+1}':escala_vuelo,f'Duracion Escala {num_escala+1}':duracion_escala_vuelo}
+        # actualizamos nuestro dicionario de escalas totales
+        duracion_escalas_dic.update(duracion_escalas)
+
+    # agregamos nuestras escalas totales en nuestra lista de datos    
+    datos_escalas.append({'duracion_escalas':duracion_escalas_dic})
 
     return datos_escalas
 ```
@@ -1814,7 +1823,7 @@ def obtener_tiempos(vuelo):
     puede haber diferencia de horarios entre el origen y el destino.
     '''
     #hora de salida
-    hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+    hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-klSiHT hjzFuR flight-information"]/span[1]').text
     #hora de llegada
     hora_llegada=vuelo_1.find_element('xpath','.//div[3]/span[1]').text.replace('\n+1','')
     # Duracion del vuelo
@@ -1826,6 +1835,7 @@ def obtener_tiempos(vuelo):
         'duracion_vuelo':duracion_vuelo
     }
     return tiempos_vuelo_dict
+
 ```
 
 ---
