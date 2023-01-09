@@ -2226,3 +2226,492 @@ por ultimo podemos cerrar el navegador
 driver.close()
 ```
 # 18. **Demoras dinámicas** 
+
+Para evitar fallos de carga de la página y de mensajes emergente que no dejen realizar el scraper, se implementan `demoras dinámicas`, estas a diferencia de la `demora estática` brindan un mejor rendimiento ya que no tienen que esperar el tiempo estático sino que esperan a que se cargue la página y si tarda menos del tiempo estipulado, empieza a hacer el scraper.
+
+## **`Demora dinámica`**
+
+Utilizando una función de Selenium que detectará cuando un elemento esté presente en la página como una señal de que ya ha cargado en un rango de tiempo y si se excede este rango de tiempo, podemos lanzar una excepción.
+
+En la documentación oficial podemos encontrar diferentes manera de poder implementar estas esperas inteligentes
+
+[Waits](https://www.selenium.dev/documentation/webdriver/waits/)
+
+[5. Waits - Selenium Python Bindings 2 documentation](https://selenium-python.readthedocs.io/waits.html)
+
+## Empecemos!
+
+Para ello debemos importar varias librerías
+
+```python
+from selenium import webdriver
+
+# #importampos libreria para cargar el driver automaticamente de firefox
+# from webdriver_manager.firefox import GeckoDriverManager
+
+#importampos libreria para cargar el driver manualemente de google chrome
+from selenium.webdriver.chrome.options import Options
+import time
+
+#pagina web que vamos a hacer el scraping
+url='https://www.latamairlines.com/py/es/ofertas-vuelos?origin=ASU&outbound=2023-08-01T12%3A00%3A00.000Z&destination=BCN&inbound=null&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+```
+
+librerías necesarias para las demoras inteligentes
+
+```python
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+```
+
+ahora las funciones principales de nuestro scraper
+
+```python
+def obtener_precios(vuelo):
+    '''
+    Función que retorna una lista de diccionarios con las distintas tarifas
+    '''
+
+    tarifas= vuelo.find_elements('xpath','.//ol[@class="sc-buGlAa jhwXGF"]/li')
+    precios=[]
+
+    for tarifa in tarifas:
+        #buscamos en cada pocision de la tarifa los siquientes elementos
+        nombre = tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[1]/span[@class="sc-fhiYOA iwcbaW"]').text
+        moneda= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[contains(@class,"currency")]').text
+        valor= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[@class="sc-ckYZGd grNCid"]').text
+        
+        #guardo los valores que obtengo en un diccionario
+        dict_tarifa={nombre:{'moneda':moneda,'valor':valor}}
+        
+        #guardamos nuestro diccionario con los datos de tarifa a nuestra lista de precio
+        precios.append(dict_tarifa)
+    return precios
+```
+
+```python
+def obtener_datos_escalas(vuelo):
+    '''
+    Función que retorna una lista de diccionarios con la información de 
+    las escalas de cada vuelo
+    '''
+    
+    segmentos= vuelo.find_elements('xpath','//article[@class="sc-lffWgi vYKpy"]//section[@class="sc-fGSyRc fCuylQ"]')
+    datos_escalas = []
+    duracion_escalas_dic = {}
+    for segmento in segmentos:
+        # espera inteligente para encontrar un elemento dentro de una seccion y guardar
+        wait_seg = WebDriverWait(segmento, 15)
+
+        # origen
+        #origen_segmento=segmento.find_element(By.XPATH,'.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[1]').text
+        
+        #origen demora - inteligente
+        origen_segmento = wait_seg.until(EC.presence_of_element_located(
+            (By.XPATH, './/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[last()-1]'))).text
+
+        # hora de salida
+        #hora_salida=segmento.find_element(By.XPATH,'.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[@class="time"]').text
+        
+        # hora de salida - demora inteligente
+        hora_salida = WebDriverWait(segmento, 15).until(EC.presence_of_element_located(
+            (By.XPATH, './/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[2]'))).text
+
+        # destino
+        #destino_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[1]').text
+        
+        # desitno - demora inteligente
+        destino_segmento = WebDriverWait(segmento, 15).until(EC.presence_of_element_located(
+            (By.XPATH, './/div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[1]'))).text
+
+        # Hora de llegada
+        #hora_llegada=segmento.find_element('xpath','.//div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[2]').text
+
+        #Hora de llegada - demora inteligente
+        hora_llegada = WebDriverWait(segmento, 15).until(EC.presence_of_element_located(
+            (By.XPATH, './/div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[2]'))).text
+
+        # Duracion del vuelo
+        #duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-ewMkZo hQNSAX"]/span[2]').text
+
+        #Duracion del vuelo - demora inteligente
+        duracion_segmento = WebDriverWait(segmento, 15).until(EC.presence_of_element_located(
+            (By.XPATH, './/div[@class="sc-ewMkZo hQNSAX"]/span[2]'))).text
+
+        # Numero de vuelo
+        #numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-dzQEYZ dslPlz airline-wrapper"]').text
+
+        # Numero de vuelo - demora inteligente
+        numero_vuelo_segmento = WebDriverWait(segmento, 15).until(EC.presence_of_element_located(
+            (By.XPATH, './/div[@class="sc-dzQEYZ dslPlz airline-wrapper"]'))).text
+
+        # Modelo de avion
+        #modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-sVRsr eXYUTi"]//span[@class="airplane-code"]').text
+
+        # Modelo de avion - demora inteligente 
+        modelo_avion_segmento = WebDriverWait(segmento, 15).until(EC.presence_of_element_located(
+            (By.XPATH, './/div[@class="sc-sVRsr eXYUTi"]//span[@class="airplane-code"]'))).text
+
+        # Armo un diccionario para almacenar los datos
+        datos_escalas_dict = {
+            'origen': origen_segmento,
+            'hora_salida': hora_salida,
+            'destino': destino_segmento,
+            'hora_llega': hora_llegada,
+            'duracion': duracion_segmento,
+            'numero_vuelo': numero_vuelo_segmento,
+            'modelo_avion': modelo_avion_segmento
+        }
+        datos_escalas.append(datos_escalas_dict)
+
+    # seleccionamos los segmentos(section) del modal  pertencientes a las escalas
+    escalas_vuelo = vuelo.find_elements(
+        'xpath', '//section[@class="sc-kiXyGy sc-eZXMBi dKgCnQ connectionInfo"]')
+    
+    #recorremos cada segmento de escala para obtener su informacion
+    for num_escala, escala in enumerate(escalas_vuelo):
+        escala = escala
+        # conexion de la escala
+        escala_vuelo = escala.find_element(
+            'xpath', './/div[@class="sc-ekQYnd cByWfv"]//span[@class="connection-text"]').text
+        # duracion de la escala
+        duracion_escala_vuelo = escala.find_element(
+            'xpath', './/div[@class="sc-ekQYnd cByWfv"]//span[@class="time"]').text
+        # guardamos en un diccionario la escala actual
+        duracion_escalas = {f'Escala {num_escala+1}': escala_vuelo,
+                            f'Duracion Escala {num_escala+1}': duracion_escala_vuelo}
+        # actualizamos nuestro dicionario de escalas totales
+        duracion_escalas_dic.update(duracion_escalas)
+
+    # agregamos nuestras escalas totales en nuestra lista de datos
+    datos_escalas.append({'duracion_escalas': duracion_escalas_dic})
+    return datos_escalas
+```
+
+```python
+def obtener_tiempos(vuelo):
+    '''
+    Función que retorna un diccionario con los horarios de salida y llegada de cada
+    vuelo, incluyendo la duración. 
+    Nota: la duración del vuelo no es la hora de llegada - la hora de salida porque
+    puede haber diferencia de horarios entre el origen y el destino.
+    '''
+    #hora de salida
+    hora_salida=vuelo.find_element('xpath','.//div[@class="sc-klSiHT hjzFuR flight-information"]/span[1]').text
+    #hora de llegada
+    hora_llegada=vuelo.find_element('xpath','.//div[3]/span[1]').text.replace('\n+1','')
+    # Duracion del vuelo
+    duracion_vuelo= vuelo.find_element('xpath','.//div[2]/span[2]').text
+
+    tiempos_vuelo_dict={
+        'hora_salida':hora_salida,
+        'hora_llegada':hora_llegada,
+        'duracion_vuelo':duracion_vuelo
+    }
+
+    return tiempos_vuelo_dict
+```
+
+```python
+def obtener_info(driver):
+    #Usaremos el Xpath para obtener la lista de vuelos
+    # Sin demora inteligente
+    #vuelos = driver.find_elements('xpath','//ol/li[@class="sc-bvTASY cfqKKq"]')
+    
+    # implementamos demora inteligente para que cargen primero todos los elementos y luego continue el codigo
+    wait= WebDriverWait(driver, 10)
+    vuelos = wait.until(EC.presence_of_all_elements_located((By.XPATH,'//ol/li[@class="sc-bvTASY cfqKKq"]')))
+    
+    print(f'Se encontaron {len(vuelos)} vuelos.')
+    print(f'Iniciando Scraping...')
+    info=[]
+    contador=0
+    for vuelo in vuelos:
+        #contador < 10 -> para hacer pruebas hasta el vuelo numero 10
+        if contador<10:
+            contador+=1
+            print(f'Analizando {contador} de {len(vuelos)} vuelos')
+
+            #obtener los tiempos generales de cada vuelo
+            tiempos=obtener_tiempos(vuelo)
+            print(f'{tiempos}\n')
+            
+            #clickeamos sobe el link escalas para que se habra el modal
+            #vuelo.find_element('xpath','.//div[@class="sc-iKiVwC fbWfQZ"]//a').click()
+            
+            #le damos tiempo a que cargue el modal con todos sus elementos para luego poder analizar
+            # time.sleep(10)
+            WebDriverWait(vuelo, 10).until(EC.presence_of_element_located((By.XPATH, './/div[@class="sc-iKiVwC fbWfQZ"]//a'))).click()
+            
+            # guardamos nuestro elemento que contiene todas las escales para hacer scroll hasta el ultimo elemento
+            element= vuelo.find_element('xpath','//div[@class="MuiDialogContent-root sc-bZQynM hnBdls"]')
+            verical_ordinate = 100
+            for i in range(0, 10):
+                #print(verical_ordinate)
+                driver.execute_script("arguments[0].scrollTop = arguments[1]", element, verical_ordinate)
+                verical_ordinate += 100
+                time.sleep(1)
+
+            print('Termino de cargar las escalas')
+
+            #guardamos las escalas y llama a la funcion -> obtener escalas
+            escalas=obtener_datos_escalas(vuelo)
+            print(f'{escalas}\n')
+            
+            #cerramos el modal de las escalas
+            driver.find_element('xpath','//div[@class="MuiDialog-container MuiDialog-scrollPaper"]').click()
+
+            #clickeamos el vuelo para ver los precios implementando demora dinamica
+            vuelo.find_element('xpath','.//div[@class="sc-cIbcTr iuAYhf"]').click()
+            WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((By.XPATH,'.//ol[@class="sc-buGlAa jhwXGF"]/li')))
+            
+            print('La tabla de precios terminó de cargar')
+            
+            #guardamos los precios y llama a la funcion -> obtener precios
+            precios=obtener_precios(vuelo)
+            print(f'{precios}\n*********************************************\n')
+            
+            #click nuevamente para cerrar los precios que se desplegaron
+            vuelo.find_element('xpath','.//div[@id="undefined--button-wrapper"]/button').click()
+
+            # guardamos toda la informacion recogida en una lista
+            info.append({'precios':precios,'tiempos':tiempos,'escalas':escalas})
+
+    return info
+```
+
+nuestra función que inicia el scraper
+
+```python
+#cargar drive automaticamente utilizando webdriver
+# options = webdriver.FirefoxOptions()
+
+#cargar drive automaticamente utilizando webdriver
+#driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+
+#carga driver manualmente
+options= Options()
+
+# Podemos agregarle opciones al driver para utilizar los distintos modos del navegador
+options.add_argument('--incognito')
+
+#carga driver manualmente
+driver = webdriver.Chrome(options=options)
+driver.maximize_window()
+driver.get(url)
+
+#si aparece un mensaje popups apenas inicie la web entonces lo cerramos
+def close_dialog():
+    '''
+    Función que cierra los dialog o popups de la página
+    '''
+    dialogs = driver.find_elements(By.XPATH, '//div[contains(@class,"MuiDialog-container")]')
+    if len(dialogs):
+        dialogs[0].find_element(By.XPATH, './/button[contains(@class,"Dialog__CloseButton")]').click()
+
+close_dialog()
+
+#introducir demora/delay o tiempo maximo de espera
+delay=15
+
+try:
+    # introducir demora inteligente para que carguen toda la lista de vuelos
+    WebDriverWait(driver, delay ).until(EC.presence_of_all_elements_located((By.XPATH, '//div[@id="WrapperBodyFlights"]//ol/li[@class="sc-bvTASY cfqKKq"]')))
+    print('La página terminó de cargar')
+    obtener_info(driver)
+except TimeoutException:
+    print('La página tardó demasiado en cargar')
+finally:
+		#cerrar el navegador
+		driver.close()
+```
+
+<aside>
+🛠 También pueden usar: `driver.implicitly_wait(3)`
+Donde 3 son los segundos máximos que esperará el driver hasta que se rendericen los elementos.
+
+</aside>
+
+NOTAS:
+
+Para los que tengan ventanas emergente a la hora de hacer scraper (por ejemplo una ventana sobre prevenir el coranavirus) una solución:
+
+- Al inicio de la función `obtener_info` puse esta línea
+    
+    ```python
+    driver.find_element_by_xpath("//span[@class=‘close’]").click()
+    ```
+    
+- Y en la demora inteligente puse esto:
+    - Lo cual me sirve para esperar a que la ventana sobre el coronavirus sea visible en pantalla (presence no sirve ya que la venta siempre está “presente” pero fuera de visibilidad).
+    
+    ```python
+    vuelo = WebDriverWait(driver, delay).until(EC.visibility_of_element_located((By.XPATH, “//span[@class=‘close’]”)))
+    ```
+    
+
+## Ejercicios Resueltos por otros usuarios del curso
+
+### Ejercicio 1
+
+Latam Airlines (17-11-2022)
+
+En mi caso tengo que cerrar un dialog que se muestra al cargar la pagina  indicando si deseo moverme a la pagina de Rep. Dominicana pero dicha compañía no opera en mi país. 
+
+Tuve otra dificultad al cargar las tarifas y le puse una demora inteligente esperando a que se muestren los span que contienen de las horas.
+
+```python
+import requests
+from bs4 import BeautifulSoup
+
+url = 'https://www.latamairlines.com/us/es/ofertas-vuelos?origin=BUE&inbound=null&outbound=2022-11-30T16%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+req = requests.get(url)
+soup = BeautifulSoup(req.text, 'lxml')
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
+
+def close_dialog():
+    '''
+    Función que cierra los dialog o popups de la página
+    '''
+    dialogs = driver.find_elements(By.XPATH, '//div[contains(@class,"MuiDialog-container")]')
+    if len(dialogs):
+        dialogs[0].find_element(By.XPATH, './/button[contains(@class,"Dialog__CloseButton")]').click()
+
+def obtener_precios(vuelo):
+    '''
+    Función que retorna una lista de diccionarios con las distintas tarifas
+    '''
+    precios = list()
+    tarifas = vuelo.find_elements(By.XPATH, './/ol/li')
+    for tarifa in tarifas:
+        nombre = tarifa.find_element(By.XPATH, './/span').get_property('innerText')
+        display_amount = tarifa.find_element(By.XPATH, './/span[contains(@class,"displayAmount")]')
+        moneda = display_amount.find_element(By.XPATH, './/span[contains(@class,"currency")]').text
+        monto = display_amount.find_element(By.XPATH, './/span[2]').text
+        tarifa_dict = {nombre: dict(moneda=moneda, monto=monto)}
+        precios.append(tarifa_dict)
+
+    return precios
+
+def obtener_datos_escalas(vuelo):
+    '''
+    Función que retorna una lista de diccionarios con la información de
+    las escalas de cada vuelo
+    '''
+    info_escalas = list()
+    sections_container = vuelo.find_element(By.XPATH, '//div[contains(@class,"MuiDialogContent-root")]/article')    
+    WebDriverWait(sections_container, 5).until(lambda s: len(s.find_elements(By.XPATH, './/span[@class="time"]')) > 1)
+    sections = sections_container.find_elements(By.XPATH, './div/section')
+    cant_escalas = len(sections_container.find_elements(By.XPATH, './div/section[@data-test="section-info-leg"]'))-1
+
+    for i, section in enumerate(sections):
+        if section.get_attribute('data-test') != 'section-info-leg':
+            duracion_escala = section.find_element(By.XPATH, './/span[@class="time"]').text
+            info_escalas[-1][f'duracion_escala_{int((i+1)/2)}'] = duracion_escala
+            continue
+        airport_names = section.find_elements(By.XPATH, './/span[@class="ariport-name"]')
+        times = section.find_elements(By.XPATH, './/span[@class="time"]')
+        origen = airport_names[0].text
+        hora_partida = times[0].text
+        duracion_vuelo = times[1].text
+        destino = airport_names[1].text
+        hora_llegada = times[2].text
+        plane_info = section.find_element(By.XPATH, './/div[contains(@class,"plane-info")]')
+        numero_vuelo = plane_info.find_element(By.XPATH, 
+                        './/div[@class="incoming-outcoming-title"]/div[contains(@class,"airline-wrapper")]').text
+        modelo_avion = plane_info.find_element(By.XPATH, './/span[@class="airplane-code"]').text
+        info = dict(origen=origen, hora_partida=hora_partida, duracion_vuelo=duracion_vuelo, 
+                    destino=destino, hora_llegada=hora_llegada, numero_vuelo=numero_vuelo, 
+                    modelo_avion=modelo_avion)
+        info_escalas.append(info)
+
+    return {'cant_escalas': cant_escalas, 'info': info_escalas}
+
+def obtener_tiempos(vuelo):
+    '''
+    Función que retorna una lista diccionarios con los horarios de salida y llegada de cada
+    vuelo, incluyendo la duración.
+    Nota: la duración del vuelo no es la hora de llegada menos la hora de salida porque
+    puede haber diferencia de horarios entre el origen y destino
+    '''
+    tiempos = dict()
+    origin_info = vuelo.find_elements(By.XPATH, './/div[contains(@class,"flight-information")][1]/span')
+    origen = origin_info[1].text
+    # salida = origin_info.find_element(By.XPATH, './/div[contains(@class,"flight-information")][1]/span[1]').text
+    hora_partida = origin_info[0].text
+    duracion_vuelo = vuelo.find_element(By.XPATH, './/div[contains(@class,"flight-duration")]/span[2]').text
+    destination_info = vuelo.find_elements(By.XPATH, './/div[contains(@class,"flight-information")][2]/span')
+    # llegada = vuelo.find_element(By.XPATH, './/div[contains(@class,"flight-information")][2]/span[1]').text
+    hora_llegada = destination_info[0].text.replace('\n', ' ')
+    destino = destination_info[1].text
+    tiempos = dict(origen=origen, hora_partida=hora_partida, duracion_vuelo=duracion_vuelo, 
+                destino=destino, hora_llegada=hora_llegada)
+    return tiempos
+
+def obtener_info(driver):
+    vuelos = driver.find_elements(By.XPATH, '//div[@id="WrapperBodyFlights"]/ol/li')
+    print(f'Se encontraron {len(vuelos)} vuelos.')
+    print('Iniciando Scraping....')
+    info = list()
+    for i, vuelo in enumerate(vuelos):
+        print(f'Vuelo {i + 1}', end='')
+        # obtenemos los tiempos generales de cada vuelo
+        tiempos = obtener_tiempos(vuelo)
+        print('.', end='')
+        # clickeamos sobre el botón de las escalas (parada)
+        btn_escalas = vuelo.find_element(By.XPATH, './/div[contains(@id, "ContainerFooterCard")]/a')
+        btn_escalas.click()
+        # obtenemos las escalas de cada vuelo
+        escalas = obtener_datos_escalas(vuelo)
+        print('.', end='')
+        # cerramos el modal
+        close_dialog()
+        # clickeamos el vuelo para mostrar las tarifas
+        vuelo.click()
+        # obtenemos las tarifas de cada vuelo
+        precios = obtener_precios(vuelo)
+        print('.')
+        vuelo.click()
+        info.append(dict(tiempos=tiempos, escalas=escalas, precios=precios))
+
+    return info
+
+options = webdriver.ChromeOptions()
+options.add_argument('--incognito')
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+driver.maximize_window()
+driver.implicitly_wait(10)
+driver.get(url)
+close_dialog()
+try:
+    # introducir demora inteligente
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//div[@id="WrapperBodyFlights"]/ol/li')))
+    print('La página terminó de cargar')
+    info_vuelos = obtener_info(driver)
+    print(info_vuelos)
+except TimeoutException:
+    print('La página tardó demasiado en cargar')
+finally:
+    driver.close()
+```
+
+La salida en pantalla:
+
+```python
+La página terminó de cargar
+Se encontraron 30 vuelos.
+Iniciando Scraping....
+Vuelo 1...
+Vuelo 2...
+Vuelo 3...
+```
