@@ -454,11 +454,14 @@ driver.get(url)```
 ```
 
 # 13. **Selección de elementos** 
+> ####
+3 Seccion resuelta ->  [M3C2 - Seleccion-De-Elementos](M3C2-seleccion-de-elementos.ipynb) puedes mirar este archivo como guía
+
 Se recomienda a la hora de inspeccionar paginas web, tener el inspector de elemento en otra ventana separada, para que no afecte la navegación del mismo ya que las paginas web reconocen la resolución del navegador, y acomodan el contenido en función a ello .  
 
 Para buscar y seleccionar uno o varios elementos de la web utilizaremos la función `find_element` o `find_elements` y armar el `xpath` (la ruta XML) que nos va a permitir identificar donde se encuentran cada uno de los elementos que necesitamos extraer a través de los tag y sus atributos.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/bc08863a-e210-4aaf-bf82-adfe2bd8495b/Untitled.jpeg)
+<img src="./img/m3c2-1.jpeg"/>
 
 En la misma documentación Oficial de Selenium obtendremos todo lo necesario para aprender a utilizar la función de `find_element` para un elemento, o para múltiples elementos `find_elements`
 
