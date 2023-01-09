@@ -130,6 +130,9 @@ Este video por si a alguien le sirve [https://www.youtube.com/watch?v=qYqGGrAA_I
 [Selenium with Python - Selenium Python Bindings 2 documentation](https://selenium-python.readthedocs.io/index.html)
 
 # 12. **Sitios dinámicos y Selenium** 
+
+> #### [M3C1 Sitios dinámicos y Selenium](M3C1-seleccion-de-elementos.ipynb) puedes mirar este archivo como guía de esta sección.
+
 Selenium es una herramienta que nos permitirá controlar un navegador y podremos utilizar las funcionalidades del motor de JavaScript para cargar el contenido que no viene en el HTML de la página. Para esto necesitamos el módulo `webdriver`.
 
 ```python
@@ -312,15 +315,17 @@ driver = webdriver.Chrome(ChromeDriverManager().install())
 
 ## Ahora si! despeguemos ✈
 
-Para este proyecto de scraper a la pagina web de Latam AirLines, realizamos la requests. Pero como `son sitios dinámicos` y hacen uso de `Javascript`, en Jupyter notebook, python NO puede procesar este lenguaje y por eso hacemos uso de `Selenium`
+Para este proyecto de scraper a la pagina web de Latam AirLines, vamos a seleccionar un origen del vuelo, el destino, fecha y buscamos los vuelos disponibles. 
 
 <img src="./img/m3c1-1.png"/>
+
+Ahora realizamos la requests. Pero como `son sitios dinámicos` y hacen uso de `Javascript`, en Jupyter notebook, python NO puede procesar este lenguaje y por eso hacemos uso de `Selenium`
 
 ```python
 import requests
 from bs4 import BeautifulSoup
 
-url = 'https://www.latam.com/es_co/apps/personas/booking?fecha1_dia=11&fecha1_anomes=2021-01&fecha2_dia=25&fecha2_anomes=2021-01&from_city2=JFK&to_city2=MDE&auAvailability=1&ida_vuelta=ida_vuelta&vuelos_origen=Medell%C3%ADn&from_city1=MDE&vuelos_destino=Nueva%20York&to_city1=JFK&flex=1&vuelos_fecha_salida_ddmmaaaa=15/11/2020&vuelos_fecha_regreso_ddmmaaaa=30/11/2020&cabina=Y&nadults=2&nchildren=0&ninfants=1&cod_promo=&stopover_outbound_days=0&stopover_inbound_days=0&application=#/'
+url = 'https://www.latamairlines.com/py/es/ofertas-vuelos?origin=ASU&outbound=2023-08-01T12%3A00%3A00.000Z&destination=BCN&inbound=null&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
 
 agent = {"User-Agent":"Mozilla/5.0"}
 r = requests.get(url, headers=agent)
@@ -454,8 +459,7 @@ driver.get(url)```
 ```
 
 # 13. **Selección de elementos** 
-> ####
-3 Seccion resuelta ->  [M3C2 - Seleccion-De-Elementos](M3C2-seleccion-de-elementos.ipynb) puedes mirar este archivo como guía
+> #### [M3C2 Seleccion De Elementos](M3C2-seleccion-de-elementos.ipynb) puedes mirar este archivo como guía de esta sección.
 
 Se recomienda a la hora de inspeccionar paginas web, tener el inspector de elemento en otra ventana separada, para que no afecte la navegación del mismo ya que las paginas web reconocen la resolución del navegador, y acomodan el contenido en función a ello .  
 
