@@ -1291,7 +1291,8 @@ for idf, flight in enumerate(flights):
     flight.click()
     tariffs = flight.find_elements(By.XPATH, '//ol[@aria-label="Tarifas disponibles."]/li[contains(@id, "WrapperBundleCardbundle-detail")]')
     for idt, tariff in enumerate(tariffs):
-        tariff_name = tariff.find_elements(By.XPATH, './/div[@aria-hidden="true"]//span')[0].text.replace('\n', '')
+        tari
+        ff_name = tariff.find_elements(By.XPATH, './/div[@aria-hidden="true"]//span')[0].text.replace('\n', '')
         tariff_price = tariff.find_element(By.XPATH, './/span[contains(@class, "displayAmount")]').text
         tariffs_data.append({
             'flight_id': idf,
@@ -1729,6 +1730,9 @@ for i in range(len(tarifas)):
 ```
 
 # 16. **Construyendo Funciones** 
+
+> #### [M3C5 Construyendo Funciones](M3C5-Construyendo-Funciones.ipynb) puedes mirar este archivo como guía de esta sección.
+
 Será de gran utilidad armar funciones que resuelvan la extracción de información de cada sección de la página.
 
 Por eso te propongo armar 3 funciones  que utilicen todo lo que veníamos construyendo del primer vuelo, para que esta vez vayamos aplicando a todos los vuelos, para eso son las funciones que creamos, obtendremos los datos de escalas y las tarifas de todos los vuelos.
