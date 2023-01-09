@@ -2083,6 +2083,9 @@ def obtener_datos_escala(vuelo):
     return(info_escalas)
 ```
 # 17. **Construyendo la función para unificar el scraper**
+
+> #### [M3C6 Unficando Scraper](M3C6-unificando-el-escraper.ipynb) puedes mirar este archivo como guía de esta sección.
+
 Una vez que tenemos todas las funciones listas de nuestro scraping, debemos de llamarla para poder obtener  información.
 
 Así que todo lo que estuvimos haciendo previamente en las secciones, ahora unificamos en funciones.
@@ -2099,7 +2102,7 @@ from selenium import webdriver
 from webdriver_manager.firefox import GeckoDriverManager
 import time
 
-url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+url='https://www.latamairlines.com/py/es/ofertas-vuelos?origin=ASU&outbound=2023-08-01T12%3A00%3A00.000Z&destination=BCN&inbound=null&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
 ```
 
 creamos una función que retorna una lista de diccionarios con las distintas tarifas
@@ -2109,18 +2112,19 @@ def obtener_precios(vuelo):
     '''
     Función que retorna una lista de diccionarios con las distintas tarifas
     '''
-    tarifas= vuelo.find_elements('xpath','.//ol[@class="sc-iAVDmT DwgCo"]/li[@class="sc-jjgyjb buqrVI"]')
+    tarifas= vuelo.find_elements('xpath','.//ol[@class="sc-buGlAa jhwXGF"]/li[@class="sc-kecUPG dPNrrD"]')
     precios=[]
     for tarifa in tarifas:
         #buscamos en cada pocision de la tarifa los siquientes elementos
-        nombre = tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[1]/span[@class="sc-gBSKhj chxCgG"]').text
-        moneda= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[contains(@class,"currency")]').text
-        valor= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[@class="sc-ihiiSJ AoaXI"]').text
+        nombre = tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[1]/span[@class="sc-fhiYOA iwcbaW"]').text
+        moneda= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[contains(@class,"currency")]').text
+        valor= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[@class="sc-ckYZGd grNCid"]').text
+        
         #guardo los valores que obtengo en un diccionario
         dict_tarifa={nombre:{'moneda':moneda,'valor':valor}}
-        #guradamos nuestro diccionario con los datos de tarifa a nuestra lia de precio
+        
+        #guardamos nuestro diccionario con los datos de tarifa a nuestra lista de precio
         precios.append(dict_tarifa)
-        # print(dict_tarifa)
     return precios
 ```
 
@@ -2132,31 +2136,25 @@ def obtener_datos_escalas(vuelo):
     Función que retorna una lista de diccionarios con la información de 
     las escalas de cada vuelo
     '''
-
-    segmentos= vuelo.find_elements('xpath','//div[@class="MuiDialogContent-root sc-fjdhpX jvVjjf"]//section[@class="sc-fEVUGC gIelIH"]')
-    datos_escalas=[]    
+    # seleccionamos los elementos pertencientes a los vuelos antes de las escalas
+    segmentos= vuelo.find_elements('xpath','//section[@class="sc-fGSyRc fCuylQ"]')
+    datos_escalas=[]
+    duracion_escalas_dic={}    
     for segmento in segmentos:
         #origen
-        salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[1]').text
+        salida=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[1]').text
         #hora de salida
-        hora_salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[2]').text
+        hora_salida=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[2]').text
         #destino
-        destino_segmento=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[1]').text
+        destino_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[1]').text
         #Hora de llegada
-        hora_llegada=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[2]').text
+        hora_llegada=segmento.find_element('xpath','.//div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[2]').text
         #Duracion del vuelo
-        duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-BOulX kmIWrd"]/span[2]').text
+        duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-ewMkZo hQNSAX"]/span[2]').text
         #Numero de vuelo
-        numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//div[@class="sc-bscRGj iggkUa airline-wrapper"]').text
+        numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-dzQEYZ dslPlz airline-wrapper"]').text
         #Modelo de avion
-        modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//span[@class="airplane-code"]').text
-        
-        #el último segmento no tendrá escala por que es el destino final del vuelo
-        if segmento != segmentos[-1]:    
-            #Duracion escala
-            duracion_escala_vuelo=segmento.find_element('xpath','//section[@class="sc-fEVUGC gAwpmW"]//span[@class="time"]').text
-        else:
-            duracion_escala_vuelo=''
+        modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-sVRsr eXYUTi"]//span[@class="airplane-code"]').text
         
         # Armo un diccionario para almacenar los datos
         datos_escalas_dict={
@@ -2165,11 +2163,27 @@ def obtener_datos_escalas(vuelo):
             'destino':destino_segmento,
             'hora_llega':hora_llegada,
             'duracion':duracion_segmento,
+            #'duracion_escala':duracion_escala_vuelo,
             'numero_vuelo':numero_vuelo_segmento,
-            'modelo_avion':modelo_avion_segmento,
-            'duracion_escala':duracion_escala_vuelo
+            'modelo_avion':modelo_avion_segmento
         }
         datos_escalas.append(datos_escalas_dict)
+    
+    # seleccionamos los segmentos pertencientes a las escalas
+    escalas_vuelo=vuelo.find_elements('xpath','//section[@class="sc-kiXyGy sc-eZXMBi dKgCnQ connectionInfo"]')
+    for num_escala, escala in enumerate(escalas_vuelo):
+        escala=escala
+        #conexion de la escala
+        escala_vuelo=escala.find_element('xpath','.//div[@class="sc-ekQYnd cByWfv"]//span[@class="connection-text"]').text
+        #duracion de la escala
+        duracion_escala_vuelo=escala.find_element('xpath','.//div[@class="sc-ekQYnd cByWfv"]//span[@class="time"]').text
+        # guardamos en un diccionario la escala actual
+        duracion_escalas={f'Escala {num_escala+1}':escala_vuelo,f'Duracion Escala {num_escala+1}':duracion_escala_vuelo}
+        # actualizamos nuestro dicionario de escalas totales
+        duracion_escalas_dic.update(duracion_escalas)
+
+    # agregamos nuestras escalas totales en nuestra lista de datos    
+    datos_escalas.append({'duracion_escalas':duracion_escalas_dic})
 
     return datos_escalas
 ```
@@ -2187,7 +2201,7 @@ def obtener_tiempos(vuelo):
     puede haber diferencia de horarios entre el origen y el destino.
     '''
     #hora de salida
-    hora_salida=vuelo.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+    hora_salida=vuelo.find_element('xpath','.//div[@class="sc-klSiHT hjzFuR flight-information"]/span[1]').text
     #hora de llegada
     hora_llegada=vuelo.find_element('xpath','.//div[3]/span[1]').text.replace('\n+1','')
     # Duracion del vuelo
@@ -2216,32 +2230,34 @@ Pero esto es una solo una forma de demora, de esta manera se espera la cantidad 
 ```python
 def obtener_info(driver):
     #Usaremos el Xpath para obtener la lista de vuelos
-    vuelos = driver.find_elements('xpath','//ol/li')
+    vuelos = driver.find_elements('xpath','//ol/li[@class="sc-bvTASY cfqKKq"]')
     print(f'Se encontaron {len(vuelos)} vuelos.')
     print(f'Iniciando Scraping...')
     info=[]
     contador=0
     for vuelo in vuelos:
+        contador+=1
+        print(f'Analizando {contador} de {len(vuelos)} vuelos')
         #obtener los tiempos generales de cada vuelo
         tiempos=obtener_tiempos(vuelo)
         #clickeamos sobe el link escalas
-        vuelo.find_element('xpath','//div[@class="sc-fYAFcb kdctDt"]//a').click()
+        vuelo.find_element('xpath','.//div[@class="sc-iKiVwC fbWfQZ"]//a').click()
         #esperamos que cargue el contenido
         time.sleep(10)
         escalas=obtener_datos_escalas(vuelo)
         #cerramos el modal
-        driver.find_element('xpath','//*[@id="itinerary-modal-0-dialog-close"]').click()
+        driver.find_element('xpath','//div[@class="MuiDialog-container MuiDialog-scrollPaper"]').click()
+        time.sleep(10)
         #clickeamos el vuelo para ver los precios
-        vuelo.click()
+        vuelo.find_element('xpath','.//div[@class="sc-cIbcTr iuAYhf"]').click()
+        # vuelo.click()
         #esperamos que cargue el contenidon de los precios
-        time.sleep(5)
+        time.sleep(10)
         precios=obtener_precios(vuelo)
         #click nuevamente para cerrar los precios que se desplegaron
-        vuelo.click()
+        vuelo.find_element('xpath','.//div[@id="undefined--button-wrapper"]//button').click()
 
         info.append({'precios':precios,'tiempos':tiempos,'escalas':escalas})
-        contador+=1
-        print(f'Analizando {contador} de {len(vuelos)} vuelos')
 
     return info
 ```
@@ -2254,8 +2270,73 @@ options = webdriver.FirefoxOptions()
 options.add_argument('-private')
 driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
 driver.get(url)
-time.sleep(5)
+#si aparece un mensaje popups apenas inicie la web
+def close_dialog():
+    '''
+    Función que cierra los dialog o popups de la página
+    '''
+    dialogs = driver.find_elements('xpath', '//div[contains(@class,"MuiDialog-container")]')
+    if len(dialogs):
+        dialogs[0].find_element('xpath', './/button[contains(@class,"Dialog__CloseButton")]').click()
+
+close_dialog()
+time.sleep(10)
 obtener_info(driver)
+```
+salida
+```
+
+[WDM] - Downloading: 19.0kB [00:00, 6.52MB/s]                   
+C:\Users\mario\AppData\Local\Temp\ipykernel_23504\821188174.py:4: DeprecationWarning: executable_path has been deprecated, please pass in a Service object
+  driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+Output exceeds the size limit. Open the full output data in a text editor
+Se encontaron 27 vuelos.
+Iniciando Scraping...
+Analizando 1 de 27 vuelos
+Analizando 2 de 27 vuelos
+Analizando 3 de 27 vuelos
+...
+...
+...
+
+```
+y tambien nuestra informacion obtenida
+
+```
+[{'precios': [{'plus': {'moneda': 'USD', 'valor': '1,341.30'}},
+   {'top': {'moneda': 'USD', 'valor': '3,153.30'}}],
+  'tiempos': {'hora_salida': '6:55 a. m.',
+   'hora_llegada': '5:20 p. m.',
+   'duracion_vuelo': '28 h 25 min'},
+  'escalas': [{'salida': 'ASU',
+    'hora_salida': '6:55 a. m.',
+    'destino': 'LIM',
+    'hora_llega': '10:00 a. m.',
+    'duracion': '4 h 5 min',
+    'numero_vuelo': 'LA1320',
+    'modelo_avion': 'Airbus A320'},
+   {'salida': 'LIM',
+    'hora_salida': '8:20 p. m.',
+    'destino': 'MAD',
+    'hora_llega': '2:35 p. m.',
+    'duracion': '11 h 15 min',
+    'numero_vuelo': 'LA5391',
+    'modelo_avion': 'Airbus A350-900'},
+   {'salida': 'MAD',
+    'hora_salida': '4:00 p. m.',
+    'destino': 'BCN',
+    'hora_llega': '5:20 p. m.',
+    'duracion': '1 h 20 min',
+    'numero_vuelo': 'LA1523',
+    'modelo_avion': 'Airbus A319'},
+   {'duracion_escalas': {'Escala 1': 'Conexión Lima',
+     'Duracion Escala 1': '10 h 20 min',
+     'Escala 2': 'Conexión Madrid',
+     'Duracion Escala 2': '1 h 25 min'}}]},
+     ...
+     ...
+     ...
+
 ```
 
 por ultimo podemos cerrar el navegador
