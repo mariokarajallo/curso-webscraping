@@ -2345,6 +2345,8 @@ por ultimo podemos cerrar el navegador
 driver.close()
 ```
 # 18. **Demoras dinámicas** 
+> #### [M3C7 Implementando Demora Dinamica](M3C7-demora-dinamicas.ipynb) puedes mirar este archivo como guía de esta sección.
+
 
 Para evitar fallos de carga de la página y de mensajes emergente que no dejen realizar el scraper, se implementan `demoras dinámicas`, estas a diferencia de la `demora estática` brindan un mejor rendimiento ya que no tienen que esperar el tiempo estático sino que esperan a que se cargue la página y si tarda menos del tiempo estipulado, empieza a hacer el scraper.
 
@@ -2354,9 +2356,9 @@ Utilizando una función de Selenium que detectará cuando un elemento esté pres
 
 En la documentación oficial podemos encontrar diferentes manera de poder implementar estas esperas inteligentes
 
-[Waits](https://www.selenium.dev/documentation/webdriver/waits/)
+[Documentation Waits](https://www.selenium.dev/documentation/webdriver/waits/)
 
-[5. Waits - Selenium Python Bindings 2 documentation](https://selenium-python.readthedocs.io/waits.html)
+[Waits - selenium-python.readthedocs.io](https://selenium-python.readthedocs.io/waits.html)
 
 ## Empecemos!
 
@@ -2421,7 +2423,7 @@ def obtener_datos_escalas(vuelo):
     datos_escalas = []
     duracion_escalas_dic = {}
     for segmento in segmentos:
-        # espera inteligente para encontrar un elemento dentro de una seccion y guardar
+        # espera inteligente para encontrar un elemento y guardar
         wait_seg = WebDriverWait(segmento, 15)
 
         # origen
@@ -2549,7 +2551,7 @@ def obtener_info(driver):
     contador=0
     for vuelo in vuelos:
         #contador < 10 -> para hacer pruebas hasta el vuelo numero 10
-        if contador<10:
+        if contador<20:
             contador+=1
             print(f'Analizando {contador} de {len(vuelos)} vuelos')
 
@@ -2643,15 +2645,35 @@ try:
 except TimeoutException:
     print('La página tardó demasiado en cargar')
 finally:
-		#cerrar el navegador
-		driver.close()
+    #cerrar el navegador
+    driver.close()
+```
+```
+La página terminó de cargar
+Se encontaron 27 vuelos.
+Iniciando Scraping...
+Analizando 1 de 27 vuelos
+{'hora_salida': '6:55 a. m.', 'hora_llegada': '5:20 p. m.', 'duracion_vuelo': '28 h 25 min'}
+
+Termino de cargar las escalas
+[{'origen': 'ASU', 'hora_salida': '6:55 a. m.', 'destino': 'LIM', 'hora_llega': '10:00 a. m.', 'duracion': '4 h 5 min'}, {'origen': 'LIM', 'hora_salida': '8:20 p. m.', 'destino': 'MAD', 'hora_llega': '2:35 p. m.', 'duracion': '11 h 15 min'}, {'origen': 'MAD', 'hora_salida': '4:00 p. m.', 'destino': 'BCN', 'hora_llega': '5:20 p. m.', 'duracion': '1 h 20 min'}, {'duracion_escalas': {'Escala 1': 'Conexión Lima', 'Duracion Escala 1': '10 h 20 min', 'Escala 2': 'Conexión Madrid', 'Duracion Escala 2': '1 h 25 min'}}]
+
+La tabla de precios terminó de cargar
+[{'plus': {'moneda': 'USD', 'valor': '1,341.20'}}, {'top': {'moneda': 'USD', 'valor': '3,153.20'}}]
+*********************************************
+
+Analizando 2 de 27 vuelos
+...
+...
+...
+
+
 ```
 
-<aside>
-🛠 También pueden usar: `driver.implicitly_wait(3)`
-Donde 3 son los segundos máximos que esperará el driver hasta que se rendericen los elementos.
 
-</aside>
+
+> 🛠 También pueden usar: `driver.implicitly_wait(3)`
+Donde 3 son los segundos máximos que esperará el driver hasta que se rendericen los elementos.
 
 NOTAS:
 
@@ -2673,7 +2695,7 @@ Para los que tengan ventanas emergente a la hora de hacer scraper (por ejemplo u
 
 ## Ejercicios Resueltos por otros usuarios del curso
 
-### Ejercicio 1
+##### Ejercicio 1
 
 Latam Airlines (17-11-2022)
 
