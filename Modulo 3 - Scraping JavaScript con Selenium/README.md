@@ -4,7 +4,7 @@
 - [Clase 11 Instalación y configuración de Selenium](#11-instalación-y-configuración-de-selenium)
 - [Clase 12 Sitios dinámicos y Selenium](#12-sitios-dinámicos-y-selenium)
 - [Clase 13 Selección de elementos](#13-selección-de-elementos)
-- [Clase 14 Interactuando con los elementos](#14-interactuando-con-elementos)
+- [Clase 14 Interactuando con los elementos](#14-interactuando-con-los-elementos)
 - [Clase 15 Scrapeando escalas y tarifas](#15-scrapeando-escalas-y-tarifas)
 - [Clase 16 Construyendo Funciones](#16-construyendo-funciones)
 - [Clase 17 Construyendo la función para unificar el scraper](#17-construyendo-la-función-para-unificar-el-scraper)
@@ -131,7 +131,7 @@ Este video por si a alguien le sirve [https://www.youtube.com/watch?v=qYqGGrAA_I
 
 # 12. **Sitios dinámicos y Selenium** 
 
-> #### [M3C1 Sitios dinámicos y Selenium](M3C1-seleccion-de-elementos.ipynb) puedes mirar este archivo como guía de esta sección.
+> #### [M3C1 Sitios dinámicos y Selenium](M3C1-sitios-dinamicos-y-selenium.ipynb) puedes mirar este archivo como guía de esta sección.
 
 Selenium es una herramienta que nos permitirá controlar un navegador y podremos utilizar las funcionalidades del motor de JavaScript para cargar el contenido que no viene en el HTML de la página. Para esto necesitamos el módulo `webdriver`.
 
@@ -501,7 +501,7 @@ from selenium import webdriver
 #importamos libreria para cargar el driver automaticamente
 from webdriver_manager.firefox import GeckoDriverManager
 # pagina del vuelo seleccionado ida, fecha, destino
-url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+url='https://www.latamairlines.com/py/es/ofertas-vuelos?origin=ASU&outbound=2023-08-01T12%3A00%3A00.000Z&destination=BCN&inbound=null&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
 ```
 
 Paso 1: instanciar un **driver** del navegador (Necesitamos controladores web para diferentes navegadores web, en este ejemplo usamos para firefox. )
@@ -546,7 +546,7 @@ Obtengamos la información de la hora de salida, llegada y duración del vuelo
 #seleccionamos el primer vuelo
 vuelo_1=vuelos[0]
 #hora de salida
-hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-klSiHT hjzFuR flight-information"]/span[1]').text
 print (hora_salida)
 ```
 
@@ -753,6 +753,9 @@ Introducción Selenium
 [guru99 - Find Element and FindElements by XPath in Selenium WebDriver](https://www.guru99.com/find-element-selenium.html)
 
 # 14. **Interactuando con los elementos** 
+
+> #### [M3C3 Interactuando con los elementos](M3C3-interactuando-con-los-elementos.ipynb) puedes mirar este archivo como guía de esta sección.
+
 En esta sección veremos cómo obtener la información de las escalas de cada vuelo. Vayamos a la página web y veamos dónde se encuentran esos datos.
 
 > 🛠 Para desplegar esa información, debemos clickear en un `botón`.
@@ -769,7 +772,7 @@ from selenium import webdriver
 #importampos libreria para cargar el driver automaticamente
 from webdriver_manager.firefox import GeckoDriverManager
 
-url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+url='https://www.latamairlines.com/py/es/ofertas-vuelos?origin=ASU&outbound=2023-08-01T12%3A00%3A00.000Z&destination=BCN&inbound=null&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
 ```
 
 Necesitamos controladores web para diferentes navegadores web. 
@@ -814,7 +817,7 @@ Obtengamos la información de la hora de salida, llegada y duración del vuelo
 #seleccionamos el primer vuelo
 vuelo_1=vuelos[0]
 #hora de salida
-hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-klSiHT hjzFuR flight-information"]/span[1]').text
 print (hora_salida)
 ```
 
@@ -850,7 +853,7 @@ Para esto debemos usar `selenium`. Ahora veremos cómo obtener la información d
 
 ```python
 #creamos un objeto, con el link que despliega un modal con la informacion de las escalas
-link_escalas = vuelo_1.find_element('xpath','//div[@class="sc-fYAFcb kdctDt"]//a')
+link_escalas = vuelo_1.find_element('xpath','//div[@class="sc-iKiVwC fbWfQZ"]//a')
 print (link_escalas)
 ```
 
@@ -876,7 +879,7 @@ Para saber la cantidad de escala de nuestro vuelo, debemos seleccionar los segme
 <img src="./img/m3c3-5.png"/>
 
 ```python
-paradas= link_escalas.find_elements('xpath','//section[@class="sc-fEVUGC gIelIH"]')
+paradas= link_escalas.find_elements('xpath','//section[@class="sc-fGSyRc fCuylQ"]')
 print(paradas)
 ```
 
