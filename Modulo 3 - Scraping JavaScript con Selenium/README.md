@@ -962,7 +962,7 @@ def itinerario_vuelo(vuelo):
 
 # 15. **Scrapeando escalas y tarifas**
 
-> #### [M3C4 Scrapeando escalas y tarifas](M3C4-screapeando-estalas-y-tarifas.ipynb) puedes mirar este archivo como guía de esta sección.
+> #### [M3C4 Scrapeando escalas y tarifas](M3C4-screapeando-escalas-y-tarifas.ipynb) puedes mirar este archivo como guía de esta sección.
 
 En esta sección veremos cómo obtener la información de las escalas de cada vuelo.
 
@@ -985,7 +985,7 @@ from selenium import webdriver
 #importampos libreria para cargar el driver automaticamente
 from webdriver_manager.firefox import GeckoDriverManager
 
-url='https://www.latamairlines.com/ar/es/ofertas-vuelos?origin=ASU&inbound=null&outbound=2022-12-01T15%3A00%3A00.000Z&destination=MAD&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
+url='https://www.latamairlines.com/py/es/ofertas-vuelos?origin=ASU&outbound=2023-08-01T12%3A00%3A00.000Z&destination=BCN&inbound=null&adt=1&chd=0&inf=0&trip=OW&cabin=Economy&redemption=false&sort=RECOMMENDED'
 ```
 
 Necesitamos controladores web para diferentes navegadores web. 
@@ -1030,7 +1030,7 @@ Obtengamos la información de la hora de salida, llegada y duración del vuelo
 #seleccionamos el primer vuelo
 vuelo_1=vuelos[0]
 #hora de salida
-hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-ixltIz dfdfxH flight-information"]/span[1]').text
+hora_salida=vuelo_1.find_element('xpath','//div[@class="sc-klSiHT hjzFuR flight-information"]/span[1]').text
 print (hora_salida)
 ```
 
@@ -1066,7 +1066,7 @@ Para esto debemos usar `selenium`. Ahora veremos cómo obtener la información d
 
 ```python
 #creamos un objeto, con el link que despliega un modal con la informacion de las escalas
-link_escalas = vuelo_1.find_element('xpath','//div[@class="sc-fYAFcb kdctDt"]//a')
+link_escalas = vuelo_1.find_element('xpath','//div[@class="sc-iKiVwC fbWfQZ"]//a')
 print (link_escalas)
 ```
 
@@ -1092,8 +1092,10 @@ Para saber la cantidad de escala de nuestro vuelo, debemos seleccionar los segme
 <img src="./img/m3c3-5.png"/>
 
 ```python
-paradas= link_escalas.find_elements('xpath','//section[@class="sc-fEVUGC gIelIH"]')
-print(paradas)
+segmentos= link_escalas.find_elements('xpath','//section[@class="sc-fGSyRc fCuylQ"]')
+# print(segmentos, len(segmentos))
+for i in segmentos:
+    print (i)
 ```
 
 ```
@@ -1127,14 +1129,15 @@ Ahora buscaremos obtener:
 #Recorremos los segmentos del modal que nos proporciona un vuelo
 for i in segmentos:
     segmento = i
-    salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[1]').text
-    hora_salida=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-fqCOlO lpqwwl"]/div[@class="iataCode"]/span[2]').text
-    duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-dhVevo bQUzMb"]/div[@class="sc-BOulX kmIWrd"]/span[2]').text
-    destino_segmento=segmento.find_element('xpath','.//div[@class="sc-hAcydR ikJhgn"]/div[@class="iataCode"]/span[1]').text
-    numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//div[@class="sc-bscRGj iggkUa airline-wrapper"]').text
-    modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-hlELIx iUypDF plane-info"]//span[@class="airplane-code"]').text
+    salida=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[1]').text
+    hora_salida=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]/div[@class="sc-fguZLD kepXur"]/div[@class="iataCode"]/span[2]').text
+    duracion_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-ewMkZo hQNSAX"]/span[2]').text
+    destino_segmento=segmento.find_element('xpath','.//div[@class="sc-jFpLkX jAGOAr"]//div[@class="sc-eCXBzT goeYBu"]/div[@class="iataCode"]/span[1]').text
+    numero_vuelo_segmento=segmento.find_element('xpath','.//div[@class="sc-dzQEYZ dslPlz airline-wrapper"]').text
+    modelo_avion_segmento=segmento.find_element('xpath','.//div[@class="sc-sVRsr eXYUTi"]//span[@class="airplane-code"]').text
     
     print(f'Salida:{salida}\nHora Salida:{hora_salida}\nDuracion: {duracion_segmento}\nLlegada:{destino_segmento}\nNumero de vuelo:{numero_vuelo_segmento}\nModelo Avion:{modelo_avion_segmento}\n')
+
 ```
 nos dara como resultado algo similar a esto: 
 ```
@@ -1156,12 +1159,20 @@ Modelo Avion:Boeing B787-9
 
 ```python
 #obtenemos la duracion del vuelo
-duracion_escala_vuelo=link_escalas.find_element('xpath','//section[@class="sc-fEVUGC gAwpmW"]//span[@class="time"]').text
-print(f'Duracion Escala:{duracion_escala_vuelo}')
+escalas_vuelo=link_escalas.find_elements('xpath','//section[@class="sc-kiXyGy sc-eZXMBi dKgCnQ connectionInfo"]')
+for i in escalas_vuelo:
+    escala=i
+    escala_vuelo=escala.find_element('xpath','.//div[@class="sc-ekQYnd cByWfv"]//span[@class="connection-text"]').text
+    duracion_escala_vuelo=escala.find_element('xpath','.//div[@class="sc-ekQYnd cByWfv"]//span[@class="time"]').text
+    print(f'Escala:{escala_vuelo}\nDuracion Escala:{duracion_escala_vuelo}')
+    # print (i)
 ```
 
 ```
-Duracion Escala:7 h 40 min
+Escala:Conexión Lima
+Duracion Escala:10 h 20 min
+Escala:Conexión Madrid
+Duracion Escala:1 h 25 min
 ```
 
 Una vez que hayamos obtenido toda la información, debemos cerrar el modal/pop-up.
@@ -1183,7 +1194,7 @@ La información de los precios para cada tarifa está contenida en una tablas (o
 <img src="./img/m3c4-3.png"/>
 
 ```python
-tarifas= vuelo_1.find_elements('xpath','.//ol[@class="sc-iAVDmT DwgCo"]/li[@class="sc-jjgyjb buqrVI"]')
+tarifas= vuelo_1.find_elements('xpath','.//ol[@class="sc-buGlAa jhwXGF"]/li[@class="sc-kecUPG dPNrrD"]')
 print (tarifas)
 ```
 
@@ -1194,12 +1205,13 @@ print (tarifas)
 Obtenemos los precios, donde creamos una lista, de precios con la clave:valor por cada categoría de precio
 
 ```python
+# creamos una lista donde almacenaremos los precios de cada tarifa
 precios=[]
 for tarifa in tarifas:
     #buscamos en cada pocision de la tarifa los siquientes elementos
-    nombre = tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[1]/span[@class="sc-gBSKhj chxCgG"]').text
-    moneda= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[contains(@class,"currency")]').text
-    valor= tarifa.find_element('xpath','.//div[@class="sc-ieSwJA gfCbFb"]/div[3]//span[@class="sc-ihiiSJ AoaXI"]').text
+    nombre = tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[1]/span[@class="sc-fhiYOA iwcbaW"]').text
+    moneda= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[contains(@class,"currency")]').text
+    valor= tarifa.find_element('xpath','.//div[@class="sc-gGsJSs dhstcp"]/div[3]//span[@class="sc-ckYZGd grNCid"]').text
     #guardo los valores que obtengo en un diccionario
     dict_tarifa={nombre:{'moneda':moneda,'valor':valor}}
     #guradamos nuestro diccionario con los datos de tarifa a nuestra lia de precio
