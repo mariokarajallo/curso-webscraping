@@ -962,6 +962,8 @@ def itinerario_vuelo(vuelo):
 
 # 15. **Scrapeando escalas y tarifas**
 
+> #### [M3C4 Scrapeando escalas y tarifas](M3C4-screapeando-estalas-y-tarifas.ipynb) puedes mirar este archivo como guía de esta sección.
+
 En esta sección veremos cómo obtener la información de las escalas de cada vuelo.
 
 De cada segmento del modal que nos proporciona un vuelo necesitamos:
