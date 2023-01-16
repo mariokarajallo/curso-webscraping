@@ -2,7 +2,7 @@
 
 ## **Modulo II - HTML: Requests y BeautifulSoup**
 - [Clase 4 Descargando una página web](#4-descargando-una-página-web)
-- [Clase 5 Parseando HTML con BeautifulSoup](#5-parseando-html-con-beautifulSoup)
+- [Clase 5 Parseando HTML con BeautifulSoup](#5-parseando-html-con-beautifulsoup)
 - [Clase 6 Extrayendo información](#6-extrayendo-información)
 - [Clase 7 Manejo de errores](#7-manejo-de-errores)
 - [Clase 8 Descargando Contenido](#8-descargando-contenido)
@@ -12,6 +12,7 @@
 
 
 # 4. **Descargando una página web**
+> #### [M2C1 Descargando Web](M2C1-descargando-web.ipynb) puedes mirar este archivo como guía de esta sección.
 
 ## Parsing Pagina12
 
@@ -100,6 +101,8 @@ p12.request.url
 
 # 5. Parseando HTML con BeautifulSoup
 
+> #### [M2C2 Parseando HTML con BeautifulSoup](m2c2-parseando-html-con-beautifulSoup.ipynb) puedes mirar este archivo como guía de esta sección.
+
 Beautiful Soup es una librería Python que permite extraer información de contenido en formato HTML o XML. Para usarla, es necesario especificar un parser, que es responsable de transformar un documento HTML o XML en un árbol complejo de objetos Python. 
 
 Esto permite, por ejemplo, que podamos interactuar con los elementos de una página web como si estuviésemos utilizando las herramientas del desarrollador de un navegador.
@@ -146,6 +149,9 @@ s.find('ul',attrs={'class':'horizontal-list main-sections hide-on-dropdown'}).fi
 #como resultado nos devuelve una lista []
 ```
 # 6. Extrayendo información
+
+> #### [M2C3 Extrayendo Información](m2c3-extrayendo-información.ipynb) puedes mirar este archivo como guía de esta sección.
+
 Vamos a empezar a extraer información contenida en los tags. A veces puede ser el texto del tag o puede ser algún atributo
 
 >Función que recibe un objeto de BeautifulSoup de una página de una sección y devuelve una lista de URLs a las notas de esa sección
@@ -407,6 +413,9 @@ seccion.a.text
 Arroja el mismo tipo de dato str, quizá haya diferencia en tiempo de ejecución.
 
 # 7. Manejo de errores
+
+> #### [M2C4 Manejo de Errores](m2c4-manejo-de-errores.ipynb) puedes mirar este archivo como guía de esta sección.
+
 >📌 “Puede pasar que dejemos corriendo en la noche un scraper, nos vayamos a dormir y a la mañana siguiente cuando esperamos encontrarnos con un montón de contenido ya descargado nos encontramos que a los 10min de que lo pusimos a correr ocurrió un error y se interrumpió la ejecución”
 
 ## Try, except
@@ -597,6 +606,8 @@ def obtener_notas(soup):
 </details>
 
 # 8. Descargando contenido
+
+> #### [M2C5 Descargando contenido](m2c5-descargando-contenido.ipynb) puedes mirar este archivo como guía de esta sección.
 
 En esta clase vamos a empezar a descargar el contenido de la nota. 
 
@@ -983,6 +994,8 @@ for section in sections_links:
 
 # 9. Contenido multimedia
 
+> #### [M2C6 Contenido multimedia](m2c6-contenido-multimedia.ipynb) puedes mirar este archivo como guía de esta sección.
+
 Visualización de Imagen → Liberia : IPython.display 
 
 ```python
@@ -1289,6 +1302,7 @@ except Exception as e:
 
 # 10. Unificando el scraper
 
+> #### [M2C7 Unificando el Scraper](m2c7-unificando-el-scraper.ipynb) puedes mirar este archivo como guía de esta sección.
 ## User agent
 
 **User**-**Agent** o también conocido como Agente de Usuario es una cabecera de texto **que** sirve para identificar al usuario **que** entra en una página web a través del navegador. Básicamente forma parte de la petición HTTP **que** enviamos y **que** llega al servidor de destino. Muchas veces es necesario modificar nuestro user-agent para evitar que bloqueen o retrasen nuestro programa scraper.
