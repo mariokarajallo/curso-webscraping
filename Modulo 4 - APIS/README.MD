@@ -92,3 +92,7 @@ r.json()
 {'error': {'status': 401, 'message': 'No token provided'}}
 
 > 🛠 Por el momento es todo, continuaremos en la siguiente sección.
+
+# 22. **Utilizando APIs: Tokens y Búsqueda** 
+
+> #### [M4C2 Tokens y Búsqueda](M4C2-tokens-y-busqueda.ipynb) puedes mirar este archivo como guía de esta sección.
