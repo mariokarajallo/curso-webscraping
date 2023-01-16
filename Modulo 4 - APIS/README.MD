@@ -27,3 +27,68 @@ Json significa *JavaScript Object Notation* y es un formato para describir objet
 largo del curso.
 
 Hay muy buenas APIs gratuitas en la web para practicar Machine Learning, aquí hay una lista: [https://todobi.com/las-mejores-apis-para-machine-learning/](https://todobi.com/las-mejores-apis-para-machine-learning/)
+
+# 21. **Utilizando APIs: Construir una URL** 
+
+> #### [M4C1 Construir una URL](M4C1-construir-url.ipynb) puedes mirar este archivo como guía de esta sección.
+
+Links útiles para la clase:
+- Documentación de Spotify - Web API Reference - Artistas
+
+[Web API Reference | Spotify for Developers](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist)
+
+- Coldplay en Spotify, aqui podemos ver el id del artista.
+
+[Coldplay](https://open.spotify.com/artist/4gzpq5DPGxSnKTe4SA8HAU)
+
+## Empecemos!
+
+```python
+#Importamos la libreria que utilizaremos para consumir y hacer peticiones
+import requests
+```
+
+```python
+#URL base para peticiones GET de la api de SPOTIFY
+url_base='https://api.spotify.com/v1'
+```
+
+```python
+#guardamos el id de la pagina del artista de spotify en este ejemplo el id de coldplay
+id_artist='4gzpq5DPGxSnKTe4SA8HAU'
+```
+
+```python
+#ruta de ENDPOINT para artistas (ver documentacion API)
+ep_artist='/artists/{id}'
+```
+
+```python
+#unificamos nuestra URL final
+url_base+ep_artist.format(id=id_artist)
+```
+
+```python
+#creamos nuestra peticion con la libreria requests
+# y pasamos como parametro la URL que construimos de la api de SPOTIFY
+r=requests.get(url_base+ep_artist.format(id=id_artist))
+```
+
+'https://api.spotify.com/v1/artists/4gzpq5DPGxSnKTe4SA8HAU'
+
+```python
+#vemos el estado que nos desvuelve la peticion
+r.status_code
+```
+
+401
+
+```python
+# status code = 401 ; significa que no estamos autorizados a acceder al ENDPOINT
+#utilizamos este metodo para visualizar lo que devuelve el JSON de nuestro peticion
+r.json()
+```
+
+{'error': {'status': 401, 'message': 'No token provided'}}
+
+> 🛠 Por el momento es todo, continuaremos en la siguiente sección.
