@@ -607,7 +607,7 @@ def obtener_notas(soup):
 
 # 8. Descargando contenido
 
-> #### [M2C5 Descargando contenido](M2C5-Descargando-contenido.ipynb.ipynb) puedes mirar este archivo como guía de esta sección.
+> #### [M2C5 Descargando contenido](M2C5-Descargando-contenido.ipynb) puedes mirar este archivo como guía de esta sección.
 
 En esta clase vamos a empezar a descargar el contenido de la nota. 
 
@@ -1302,7 +1302,7 @@ except Exception as e:
 
 # 10. Unificando el scraper
 
-> #### [M2C7 Unificando el Scraper](M2C7-Unificando-el-Scraper.ipynb.ipynb) puedes mirar este archivo como guía de esta sección.
+> #### [M2C7 Unificando el Scraper](M2C7-Unificando-el-Scraper.ipynb) puedes mirar este archivo como guía de esta sección.
 ## User agent
 
 **User**-**Agent** o también conocido como Agente de Usuario es una cabecera de texto **que** sirve para identificar al usuario **que** entra en una página web a través del navegador. Básicamente forma parte de la petición HTTP **que** enviamos y **que** llega al servidor de destino. Muchas veces es necesario modificar nuestro user-agent para evitar que bloqueen o retrasen nuestro programa scraper.
