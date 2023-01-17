@@ -4,7 +4,7 @@
 - [Clase 20 Introducción a APIs](#20-introducción-a-apis)
 - [Clase 21 Utilizando APIs: Construir una URL](#21-utilizando-apis-construir-una-url)
 - [Clase 22 Utilizando APIs: Tokens y Búsqueda](#22-utilizando-apis-tokens-y-búsqueda)
-- [Clase 23 Utilizando APIs: Obteniendo la discografía](#22-utilizando-apis-obteniendo-la-discografía)
+- [Clase 23 Utilizando APIs: Obteniendo la discografía](#23-utilizando-apis-obteniendo-la-discografía)
 
 # 20. **Introducción a APIs** 
 
