@@ -4,6 +4,7 @@
 - [Clase 20 Introducción a APIs](#20-introducción-a-apis)
 - [Clase 21 Utilizando APIs: Construir una URL](#21-utilizando-apis-construir-una-url)
 - [Clase 22 Utilizando APIs: Tokens y Búsqueda](#22-utilizando-apis-tokens-y-búsqueda)
+- [Clase 22 Utilizando APIs: Obteniendo la discografía](#22-utilizando-apis-obteniendo-la-discografía)
 
 # 20. **Introducción a APIs** 
 
@@ -463,3 +464,7 @@ response_search = requests.get(url_search,params=payload,headers=headers)
 # ver resultado
 response_search.json
 ```
+
+# 23. **Utilizando APIs: Obteniendo la discografía** 
+
+> #### [M4C3 Obteniendo la discografía](M4C3-obteniendo-discografia.ipynb) puedes mirar este archivo como guía de esta sección.
