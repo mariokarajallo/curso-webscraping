@@ -5,6 +5,7 @@
 - [Clase 21 Utilizando APIs: Construir una URL](#21-utilizando-apis-construir-una-url)
 - [Clase 22 Utilizando APIs: Tokens y Búsqueda](#22-utilizando-apis-tokens-y-búsqueda)
 - [Clase 23 Utilizando APIs: Obteniendo la discografía](#23-utilizando-apis-obteniendo-la-discografía)
+- [Clase 24 Utilizando APIs: Obteniendo los albumes](#24-utilizando-apis-obteniendo-los-albumes)
 
 # 20. **Introducción a APIs** 
 
@@ -1084,3 +1085,7 @@ def get_discography(albumes):
     print(f'Total de albumes al dia de hoy: {len(discografia)}\nTitulo de los albumes: \n{discografia}')
     return discografia
 ```
+# 24. **Utilizando APIs: Obteniendo los albums** 
+
+> #### [M4C4 Obteniendo los albums](M4C4-obteniendo-albumes.ipynb) puedes mirar este archivo como guía de esta sección.
+
