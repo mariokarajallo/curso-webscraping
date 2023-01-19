@@ -227,7 +227,7 @@ de esta manera obtenemos los valores de nuestros string codificados para nuestra
 ```python
 # aparte de los parametros, vamos a tener que pasarle un encabezado
 # es otro diccionario donde devolvemos nuestro client_id y client_secreta codificado en base64
-headers={'Authorization':'Basic MDI5NTI4OTQzNWMyNDc2Yjk2YWVhYTYzNTk1ODQzZjQ6NTBlYzcwMmY1YjkxNDIxMDhmNzNiNzE1MjA4NGNjNWM='}
+headers={'Authorization':'Basic MDI5NTI4OTQzNWMyNDc2Yjk2YFTG<img src="./img/m4c2-1.png"/>kiWVhYTYzNTk1ODQzZjQ6NTBlYzcwMmY1YjkxNDIxMDhmNzNiNzE1MjA4NGNjNWM='}
 ```
 
 ```python
@@ -541,7 +541,7 @@ params={'grant_type':'client_credentials'}
 ```python
 # aparte de los parametros, vamos a tener que pasarle un encabezado
 # es otro diccionario donde devolvemos nuestro client_id y client_secreta codificado en base64
-headers={'Authorization':'Basic MDI5NTI4OTQzNWMyNDc2Yjk2YWVhYTYzNTk1ODQzZjQ6NTBlYzcwMmY1YjkxNDIxMDhmNzNiNzE1MjA4NGNjNWM='}
+headers={'Authorization':'Basic MDI5NTI4OTQzNWeqMyNDc2Yjkad2YWVhYTYzNTk1ODQzZjQ6NTBlYzcwMmY1YjkxNDfIxMDhmNzNiNzE1MjA4NGNjNWM='}
 ```
 
 ```python
@@ -663,8 +663,8 @@ def get_token(client_id, client_secret):
 
 ```python
 # del dashboard de nuestra aplicacion de spotify guardamos nuestro client_id y client_secret
-client_id='0295289435c2476b96aeaa63595843f4'
-client_secret= '50ec702f5b9142108f73b7152084cc5c'
+client_id='0295289a435c2476b96daeaa63595843f4'
+client_secret= '50ec702hrf5b9142108f73b7g152084cc5c'
 # utilzamos la funcion get_token, pasando el client_id, client_secret
 token=get_token(client_id, client_secret)
 ```
@@ -1163,7 +1163,7 @@ params={'grant_type':'client_credentials'}
 ```python
 # aparte de los parametros, vamos a tener que pasarle un encabezado
 # es otro diccionario donde devolvemos nuestro client_id y client_secreta codificado en base64
-headers={'Authorization':'Basic MDI5NTI4OTQzNWMyNDc2Yjk2YWVhYTYzNTk1ODQzZjQ6NTBlYzcwMmY1YjkxNDIxMDhmNzNiNzE1MjA4NGNjNWM='}
+headers={'Authorization':'Basic MDI5NTI4OTQzNWMyNDc2Yjk2dYWVhYTYzNTk1ODQzZjQ6NTBlYzcwMmY1YjkxNDIxMDhmNGzNiNzE1MjA4NGNjNWM='}
 ```
 
 ```python
@@ -1282,8 +1282,8 @@ def get_token(client_id, client_secret):
 
 ```python
 # del dashboard de nuestra aplicacion de spotify guardamos nuestro client_id y client_secret
-client_id='0295289435c2476b96aeaa63595843f4'
-client_secret= '50ec702f5b9142108f73b7152084cc5c'
+client_id='0295289435c482476b96aeaa63595843f4'
+client_secret= '50ec702f05b9142108f73b78152084cc5c'
 # utilzamos la funcion get_token, pasando el client_id, client_secret
 token=get_token(client_id, client_secret)
 ```
@@ -1698,3 +1698,638 @@ if __name__ == "__main__":
 ```
 # 25. **Fin del proyecto + bonus** 
 
+En esta sección ejecutamos nuestras funciones previamente creadas a la vez.
+
+### Empecemos!
+
+### código sección anterior
+
+```python
+# Importamos la libreria que utilizaremos para consumir y hacer peticiones
+import requests
+import pandas as pd
+```
+
+```python
+# URL base para peticiones GET de la api de SPOTIFY
+url_base='https://api.spotify.com/v1'
+```
+
+```python
+# guardamos el id de la pagina del artista de spotify en este ejemplo el id de coldplay
+# este ID lo buscamos manualmente entrando en la pagina de spotify del artista
+id_artist='4gzpq5DPGxSnKTe4SA8HAU'
+```
+
+```python
+# ruta de ENDPOINT para artistas
+# Los endpoints son las URLs de un API o un backend que responden a una petición.
+ep_artist='/artists/{id}'
+```
+
+```python
+#unificamos nuestra URL final y le damos formato al endpoint del artista
+# de esta manera asignamos nuestro ID de coldplay al endpoint
+url_artist=url_base+ep_artist.format(id=id_artist)
+```
+
+```python
+#creamos nuestra peticion con la libreria requests
+# y pasamos como parametro la URL de la api de SPOTIFY para obtener informacion respecto con el ID del artista
+r_spotify=requests.get(url_artist)
+```
+
+```python
+#vemos el estado que nos desvuelte la peticion
+r_spotify.status_code
+```
+
+```python
+#utilizamos este metodo para visualizar lo que devuelve el JSON de nuestro peticion
+r_spotify.json()
+```
+
+```python
+# desde esta URL obtendremos acceso a un token valido para el acceso a la api
+token_url='https://accounts.spotify.com/api/token'
+```
+
+```python
+# creamos los parametros para obtener un token de acceso a la api
+# estos parametro debemos pasarle al requests en el momento que ejecutemos el la peticion GET
+params={'grant_type':'client_credentials'}
+```
+
+```python
+# aparte de los parametros, vamos a tener que pasarle un encabezado
+# es otro diccionario donde devolvemos nuestro client_id y client_secreta codificado en base64
+headers={'Authorization':'Basic MDI5NTI4OTQzNWMyNDc2Yjk2YWVhYTYz8NTk1ODQzZjQ6NTBlJYzcwMmY1HYjkxNDIxMDhmNzGTFNiNzE1MjA4NGNjNWM='}
+```
+
+```python
+#ahora si podemos solicitar el token, haciendo una request con el metodo POST
+# a nuestro token URL le pasamos los datos que son los parametros y un encabezado
+r_token = requests.post(token_url, data=params, headers=headers )
+```
+
+```python
+# una vez generado la solicitud, vemos el estado 
+r_toke.status_code
+```
+
+```python
+# vemos el json con los datos generados para el acceso a la API
+r_token.json()
+# si obtuvimos una respuesta correcta, veremos el access token, el tipo de token y el vencimiento del token
+```
+
+```python
+# un JSON no es mas ni menos que un diccionario, guardamos el valor del access_token en una variable, para acceder al token directamente
+token = r_token.json()['access_token']
+```
+
+```python
+# formatemoa el valor de Bearer con el token que obtuvimos
+header = {"Authorization":"Bearer {}".format(token)}
+```
+
+```python
+# hacemos una peticion a la api de spotify para obtener los datos de nuestro artista 
+# y como estamos autorizados pasamos el encabezado a nuestra peticion
+r_spotify= requests.get(url_artist, headers=header)
+```
+
+```python
+# Aqui verificamos que nos devuelva una respuesta optima
+r_spotify.status_code
+#//200
+```
+
+```python
+# ahora si obtuvimos un diccionario con toda la informacion de nuestro artista que tiene spotify
+# para visualizar nuestro diccionario de datos de tipo json
+r_spotify.json()
+```
+
+```python
+#direccion del ENDPOINT para realizar busquedas
+url_busqueda='https://api.spotify.com/v1/search'
+```
+
+```python
+
+# creamos los parametros para la busqueda
+# un diccionario que contenga la Query q->string , type->array
+search_params={'q': 'coldplay', 'type':'artist'}
+```
+
+```python
+# hacemos la solicitud tipo GET donde consumiremos lo que buscamos pasando los siguientes parametros
+# Url de busqueda (ENDPOINT), Header (autenticacion), params (parametros de busqueda)
+r_busqueda=requests.get(url_busqueda,headers=header,params=search_params)
+```
+
+```python
+# si todo salio bien debemos de esperar una respuesta optima
+r_busqueda.status_code
+#// 200
+```
+
+```python
+# vemos todo lo que nos trajo el resultado de la busqueda en el json
+r_busqueda.json()
+# un diccionario bastante cargado de informacion, con varias bandas que tienen el nombre de nuestro artista
+```
+
+```python
+# visualizamos nuestro json con las llave que nos interesan
+# entonces dentro de nuestra llave artist, nos quedamos con los valores de items, que son nuestros resultados de busqueda
+df = pd.DataFrame(r_busqueda.json()['artists']['items'])
+df.head()
+```
+
+```python
+# ordenamos en base a la columna popularity de myor a menor
+# me quiero quedar con el primer elemento de este data frame
+# iloc[0] tenemos el primer elemento y si quiero sola la columna id colocamos el nombre de la columna['id']
+df.sort_values(by='popularity', ascending=False).iloc[0]['id']
+```
+
+```python
+import base64
+```
+
+```python
+def get_token(client_id, client_secret):
+		#codificamos el client_id y client_secret
+    encoded = base64.b64encode(bytes(client_id+':'+client_secret, 'utf-8'))
+		# para la nueva solicitud, creamos los parametros
+    params = {'grant_type':'client_credentials'}
+		# creamos el encabezado, donde concatemos el string codificado
+    header={'Authorization': 'Basic ' + str(encoded, 'utf-8')}
+		# hacemos la solicitud tipo POST a la URL de autenticacion
+    r_token= requests.post('https://accounts.spotify.com/api/token', headers=header, data=params)
+    if r_token.status_code != 200:
+				# si el resultado (status code) no es 200 significa que hubo problemas
+				# mostramos la respuesta que nos da
+        print('Error en la request.', r_token.json())
+				#y no devolvemos nada
+        return None
+		# caso contrario deolvemos un print y retornamos la respuesta pero soloamente el acces_token
+    print('Token válido por {} segundos.'.format(r_token.json()['expires_in']))
+    return r_token.json()['access_token']
+```
+
+```python
+# del dashboard de nuestra aplicacion de spotify guardamos nuestro client_id y client_secret
+client_id='029528943a5c24te276b96aeaa6dsfdg3595843f4'
+client_secret= '50ec702f5baa914210yg8ff73asdrfsdfb7152084cc5c'
+# utilzamos la funcion get_token, pasando el client_id, client_secret
+token=get_token(client_id, client_secret)
+```
+
+```python
+header={'Authorization':'Bearer {}'.format(token)}
+```
+
+```python
+# vemos nuestro id de artista nuevamente
+id_artist
+```
+
+```python
+# guardamos la ruta del ENDPOINT
+ep_album_artist='/artists/{id}/albums'
+```
+
+```python
+#recordemos que tenemos nuestra URL base
+url_base
+```
+
+```python
+#para armar la url completa de de busqueda de albun de artista
+url_album_artist= url_base+ep_album_artist.format(id=id_artist)
+```
+
+```python
+# utilizando el parametro market podemos indicarle los albumes que queremos de un determinado pais
+params={'market':'PY', 'include_groups':'album'}
+```
+
+```python
+# generamos una nueva resquets pasando la URL de donde queremos consumir, la cabecera que indica la autorizacion y los parametros que queremos obtener
+albums_artist= requests.get(url_album_artist, headers=header, params=params)
+```
+
+```python
+#vemos la respuesta de nuestro solicitud
+albums_artist.status_code
+```
+
+```python
+# revisamos el JSON, y en la llave de items, tenemos una lista que contiene todos los albumes de nuestra artista
+album_artist.json()['items']
+```
+
+```python
+lista_albums = [(album['id'], album['name'],album['release_date']) for album in album_artist.json()['items']]
+lsita_albums
+```
+
+```python
+#seleccionamos el id de un album en aprticular
+id_album_artist='06mXfvDsRZNfnsGZvX2zpb'
+```
+
+```python
+# creamos la ENDPOINT para el album
+ep_album='/albums/{id}'.format(id=id_album_artist)
+```
+
+```python
+# creamos la ruta completa del ENDPOINT
+url_album_artist=url_base+ep_album
+url_album_artist
+```
+
+```python
+# creamos el parametro para el endpoint de album de la api
+album_params={'market':'PY', 'include_groups':'album'}
+```
+
+```python
+#hacemos la peticion GET pasando la URL del endpoint, la cabecera con su autorizacion, y los parametros de la peticion
+r_album_artist= requests.get(url_album_artist, headers=header, params=album_params)
+# seleccionamos de nuestro album el elementro tracks, que contiene una lista de items, que son las musicas con su nombre, id etc de cada musica.
+r_album_artist.json()['tracks']['items']
+```
+
+```python
+#ahora si podemos obtener el id y el name de cada track, recorriendo la lista items de tracks
+info_album=[(track['id'], track['name']) for track in r_album_artist.json()['tracks']['items']]
+info_album
+```
+
+```python
+def obtener_discrografia(artist_id, token, return_name= False, page_limit=50, country=None):
+    #tenemos la url del ENDPOINT para hacer peticiones de albumes en funcion del id del artista
+    url=f'https://api.spotify.com/v1/artists/{artist_id}/albums'
+    #cabecera donde pasaremos el tokens
+    header = {'Authorization':f'Bearer {token}'}
+    #parametros en la que se basa la peticion
+    params={'limit':page_limit, 'offset':0, 'market':'PY', 'include_groups':'album'}
+    lista_album=[]
+    #hacemos una solicitud inicial con los paramatro y la cabecera
+    r=requests.get(url, params=params, headers=header)
+
+    if r.status_code != 200:
+        #verificamos si el status_code tiene error, imprimimos el json
+        print('Error en la request.', r.json())
+        return None #retornamos None, por que no pudimos devolver nada
+    
+    #seteamos el parametro return_name si es true
+    if return_name:
+        # para que item de la request, vamos a guardar en nuestra lista el id y name
+        lista_album+=[(item['id'],item['name']) for item in r.json()['items']]
+    else:
+        # para la opcion por defecto de nuestra funcion
+        lista_album+=[(item['id']) for item in r.json()['items']]
+    
+    #debemos hacer la peticion de items hasta el final de nuestras paginas del json
+    while r.json()['next']:
+        r=requests.get(r.json()['next'], headers=header)# El resto de los parámetros están dentro de la URL ->next
+        
+        if r.status_code != 200:
+        #verificamos si el status_code tiene error, imprimimos el json
+            print('Error en la request.', r.json())
+            return None #retornamos None, por que no pudimos devolver nada
+        
+        if return_name:
+            # para que item de la request, vamos a guardar en nuestra lista el id y name
+            lista_album+=[(item['id'],item['name']) for item in r.json()['items']]
+        else:
+            # para la opcion por defecto de nuestra funcion
+            lista_album+=[(item['id']) for item in r.json()['items']]
+    
+    # ahora si podemos retornar la lista de items, que son las discografias
+    return lista_album
+```
+
+```python
+#imprimimos nuestra lista de albumes con su id y nombre de album
+print (obtener_discrografia(id_artist, return_name=True, token))
+```
+
+```python
+def obtener_tracks(album_id, token, return_name=False, page_limit=50, market=None):
+    url=f'https://api.spotify.com/v1/albums/{album_id}/tracks'
+    header = {'Authorization': f'Bearer {token}'}
+    params = {'limit': page_limit, 
+              'offset': 0,
+              'market': market}
+    lista_tracks= []
+    r = requests.get(url, params=params, headers=header)
+    
+    if r.status_code != 200:
+        print('Error en request.', r.json())
+        return None
+    
+    if return_name:
+        lista_tracks+= [(item['id'], item['name']) for item in r.json()['items']]
+    else:
+        lista_tracks+= [item['id'] for item in r.json()['items']]
+        
+    while r.json()['next']:
+        r = requests.get(r.json()['next'], headers=header) # El resto de los parámetros están dentro de la URL
+        if return_name:
+            lista_tracks += [(item['id'], item['name']) for item in r.json()['items']]
+        else:
+            lista_tracks+= [item['id'] for item in r.json()['items']]
+    
+    return lista_tracks
+```
+
+```python
+print (obtener_tracks(id_album_artist, token, True))
+```
+## codigo nuevo
+
+Utilizando estas funciones podemos obtener todos las canciones que tiene un artista publicadas en Spotify
+
+```python
+for album in obtener_discrografia(id_artist, token, return_name=True, market='PY'):
+    #vamos a imprimir el nombre de cada Album 
+    print(album[1])
+    #como sabemos que la primera posicion de nuestra lista de album es el id del album, 
+    #enviamos como parametro ese ID, para buscar sus tracks
+    for track in obtener_tracks(album[0], token, return_name=True, market='PY'):
+        # imprimimos los tracks de cada album
+        print('\t', track[1])
+```
+
+imprime el nombre de álbum, seguido de todas las músicas del álbum.
+
+## bonus
+
+```python
+# ahora obtengamos el preview de una musica
+preview_url=r_album_artist.json()['tracks']['items'][0]['preview_url']
+```
+
+```python
+# hacemos una peticion get y vemos su estado
+preview = requests.get(preview_url)
+preview.status_code
+```
+
+```python
+#podemos ver su contenido en bytes
+preview.content
+```
+
+```python
+#Importamos la libreria de python para poder previsualizar
+import IPython.display as ipd
+```
+
+```python
+# y utilizamos el metodo de audio de nuestra libreria
+ipd.Audio(preview.content)
+```
+
+debería devolver una previsualización de la música asi como el siguiente ejemplo
+
+<img src="./img/m4c5-1.png"/>
+
+### Otros Ejercicios Resueltos!
+
+#### Ejercicio1
+
+El programa permite obtener la discografía y las canciones de una discografía escogida
+
+```python
+import requests
+import base64
+import pandas as pd
+
+URL_SPOTYFY = 'https://api.spotify.com/v1'
+EP_ARTIST = '/artists/{artist_id}'
+URL_SPOTYFY_SRCH = 'https://api.spotify.com/v1/search'
+TOKEN = 'https://accounts.spotify.com/api/token'
+
+def encoding():
+    ''' Function that encodes the client id and client secret into base64'''
+    
+    client_id = "CLIENTID:CLIENTSECRET"
+    msg_bytes = client_id.encode("UTF-8")
+    msg_base64 = base64.b64encode(msg_bytes)
+    msg_decode = msg_base64.decode("UTF-8")
+
+    return msg_decode
+
+def get_token():
+    ''' Function that updates the token '''
+
+    params = {'grant_type': 'client_credentials'}
+    headers = {'Authorization': 'Basic ' + encoding()}
+    r_spoty = requests.post(TOKEN, headers=headers, data=params)
+    if r_spoty.status_code != 200:
+        print('Error en la requests', r_spoty.json())
+    return r_spoty.json()["access_token"]
+    
+def get_artist_id(artist):
+    ''' Function that finds the ID for a search artist '''
+    token = get_token()
+    header = {'Authorization': 'Bearer {}'.format(token)}
+    srch_params = {'q' : artist, 'type' : 'artist'}
+    get_url = requests.get(URL_SPOTYFY_SRCH, headers=header, params=srch_params)
+    df = pd.DataFrame(get_url.json()['artists']['items'])
+
+    artist_id = df.sort_values(by = "popularity", ascending= False).iloc[0]['id']
+
+    return artist_id
+
+def obtener_discografia(artist_id, return_name = False, page_limit = 50, country = None):
+    ''' Function that obtains the albums of the desire artist '''
+    token = get_token()
+    url = f'https://api.spotify.com/v1/artists/{artist_id}/albums'
+    header = {'Authorization': 'Bearer {}'.format(token)}
+    params = {'limit': page_limit,
+              'offset': 0,
+              'country': country}
+    lista = []
+    r = requests.get(url, headers = header, params = params)
+
+    if r.status_code != 200:
+        print('Error en la requets')
+        return None
+    if return_name:
+
+        lista += [(item['id'], item['name'],"Año:{}".format(item['release_date']) ) for item in r.json()['items']]
+    else:
+        lista += [(item['name'],"Año:{}".format(item['release_date'])) for item in r.json()['items']]
+
+    '''
+    
+    while r.json()['next']:
+        r = requests.get(r.json()['next'], headers = header)
+        if return_name:
+            lista += [(item['id'], item['name']) for item in r.json()['items']]
+        else:
+            lista += [item['id'] for item in r.json()['items']]
+    
+    '''
+    return lista
+
+def get_tracks(discografia_id, return_name = False, page_limit = 50, market = None):
+    ''' Function that gets all the tracks inside a specific album '''
+
+    album_id = str(input('Ingresa el ID del album que quieras conocer las canciones: '))
+    token = get_token()
+    url = f'https://api.spotify.com/v1/albums/{album_id}/tracks'
+    header = {'Authorization': 'Bearer {}'.format(token)}
+    params = {
+        'limit': page_limit,
+        'offset': 0
+    }
+
+    tracks = []
+    r = requests.get(url, headers = header, params = params)
+    if r.status_code != 200:
+        print('Error en la requests')
+        return None
+    if return_name:
+        tracks += [(i['id'], i['name']) for i in r.json()['items']]
+    else:
+        tracks += [(i['name']) for i in r.json()['items']]
+    
+    return tracks
+
+def run():
+
+    print('Este programa obtendrá información acerca del artista que desees.')
+    artist_name = str(input('Por favor ingresa el nombre del artista: '))
+    artist_id = get_artist_id(artist_name)
+    discografia = obtener_discografia(artist_id, return_name = True)
+    discografia_id = obtener_discografia(artist_id, return_name = True)
+    print('Esta es la discografía:')
+    counter = 1
+    for i in discografia:
+        print(counter, i)
+        counter += 1
+
+    while True:
+        choice = str(input("Deseas conocer las canciones de algún album? y/n: "))
+        if choice == "y":
+            tracks = get_tracks(discografia_id)
+            print('Estas son las canciones del album escogido:')
+            counter = 1
+            for i in tracks:
+                print(counter, i)
+                counter += 1
+            break
+
+        elif choice == "n":
+            print('Cerrando el programa')
+            break
+        else:
+            print('Escribe una opción válida')
+        
+
+if __name__ == '__main__':
+    run()
+```
+
+#### Ejercicio2
+
+Agrupe el código en funciones y exporte 3 csv , para la info del artista , discografía y todos los tracks del artista.
+
+```python
+import requests
+import base64
+import pandas as pd
+import math
+
+def main(client_id,client_secret , str_artist):
+    token = get_token(client_id,client_secret)
+    header = {'Authorization': f'Bearer {token}'};
+    artist_id = get_artist(str_artist,header)
+    list_discography = get_discography(artist_id,header);
+    get_tracks(list_discography, header)
+
+def get_tracks(list_discography , header):
+    list_tracks = []
+    for discography in list_discography:
+        discography_id = discography['id']
+        url_tracks = f'https://api.spotify.com/v1/albums/{discography_id}/tracks'
+        params = {'market': 'PE', 'offset': 0, 'limit': 50};
+        tracks = requests.get(url_tracks, headers=header, params=params)
+        tracks = tracks.json()['items']
+        for track in tracks:
+            track['discography_id']= discography_id
+            list_tracks.append(track)
+    tracks_data = pd.DataFrame(list_tracks)
+    tracks_data.to_csv('tracks.csv')
+
+    return list_tracks
+
+def get_artist(str_artist,header):
+    url_busqueda = "https://api.spotify.com/v1/search";
+    search_params = {'q': f'{str_artist}', 'type': 'artist', 'market': 'US'};
+    busqueda = requests.get(url_busqueda, headers=header, params=search_params);
+    if busqueda.status_code != 200:
+        print('Error en la request ', busqueda.json())
+        return None
+    resultado = busqueda.json()
+    artists = resultado['artists']['items'] # artistas
+    artists_data = pd.DataFrame(artists)
+    # artista
+    artist = artists_data.sort_values(by="popularity", ascending=False).iloc[0]
+    artist.to_csv('artist.csv')
+    artist_id = artist['id']
+
+    return artist_id
+
+def get_discography(artist_id ,header,offset = 0,limit = 30):
+    list_discography= [];
+    url_discography = f'https://api.spotify.com/v1/artists/{artist_id}/albums';
+    albums = requests.get(url_discography, headers=header)
+    total = albums.json()['total']
+    pages = math.ceil(total/limit)
+    for i in range (0,pages):
+        params = {'country': 'PE', 'offset': offset, 'limit': limit};
+        albums = requests.get(url_discography, headers=header, params=params)
+        if albums.status_code != 200:
+            print('Error en la request ', albums.json())
+            return None
+        albums = albums.json()['items']
+        for album in albums:
+            list_discography.append(album)
+        offset = offset + limit
+    discography = pd.DataFrame(list_discography)
+    discography.to_csv('discography.csv')
+    return list_discography;
+
+def get_token(client_id,client_secret):
+    client_str = f'{client_id}:{client_secret}'
+    # codificando en bytes
+    client_encode = base64.b64encode(client_str.encode("utf-8"))
+    # codificando en string
+    client_encode = str(client_encode, "utf-8")
+    token_url = 'https://accounts.spotify.com/api/token'
+    params = {'grant_type': 'client_credentials'}
+    headers = {'Authorization': f'Basic {client_encode}'}
+    p = requests.post(token_url, data=params, headers=headers)
+    if p.status_code != 200:
+        print('Error en la request ', p.json())
+        return None
+    token = p.json()['access_token']
+    return token
+
+if __name__ == "__main__":
+    client_id = ' tu_clientid'
+    client_secret = ' tuclient_secret'
+    str_artist = 'oasis'
+    main(client_id , client_secret , str_artist);
+```
