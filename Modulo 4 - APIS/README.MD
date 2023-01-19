@@ -6,6 +6,7 @@
 - [Clase 22 Utilizando APIs: Tokens y Búsqueda](#22-utilizando-apis-tokens-y-búsqueda)
 - [Clase 23 Utilizando APIs: Obteniendo la discografía](#23-utilizando-apis-obteniendo-la-discografía)
 - [Clase 24 Utilizando APIs: Obteniendo los albumes](#24-utilizando-apis-obteniendo-los-albumes)
+- [Clase 25 Fin del proyecto + bonus](#25-fin-del-proyecto-+-bonus)
 
 # 20. **Introducción a APIs** 
 
@@ -1695,3 +1696,5 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+# 25. **Fin del proyecto + bonus** 
+
