@@ -17,7 +17,16 @@ NEWSPIDER_MODULE = 'linkedin_jobs.spiders'
 #USER_AGENT = 'linkedin_jobs (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
+
+SCRAPEOPS_API_KEY = 'fdda1767-20c4-4aab-8abf-a83f71105cae'
+SCRAPEOPS_PROXY_ENABLED = True
+
+DOWNLOADER_MIDDLEWARES = {
+    'scrapeops_scrapy_proxy_sdk.scrapeops_scrapy_proxy_sdk.ScrapeOpsScrapyProxySdk': 725,
+}
+
+
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
