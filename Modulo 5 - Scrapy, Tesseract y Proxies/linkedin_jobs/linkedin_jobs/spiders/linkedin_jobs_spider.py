@@ -3,7 +3,7 @@ import scrapy
 
 class LinkedinJobsSpiderSpider(scrapy.Spider):
     name = 'linkedin_jobs_spider'
-    api_url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=python&location=United%2BStates&geoId=103644278&trk=public_jobs_jobs-search-bar_search-submit&start=' 
+    api_url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Ingeniero%2Bde%2Bsoftware&location=Paraguay&geoId=104065273&trk=public_jobs_jobs-search-bar_search-submit&start=' 
     # allowed_domains = ['linkedin.com']
     # start_urls = ['http://linkedin.com/']
 
