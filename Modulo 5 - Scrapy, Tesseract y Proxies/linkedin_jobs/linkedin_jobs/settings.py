@@ -20,18 +20,18 @@ NEWSPIDER_MODULE = 'linkedin_jobs.spiders'
 ROBOTSTXT_OBEY = False
 
 # scrapeops
-# SCRAPEOPS_API_KEY = 'fdda1767-20c4-4aab-8abf-a83f71105cae'
-# SCRAPEOPS_PROXY_ENABLED = True
+SCRAPEOPS_API_KEY = 'fdda1767-20c4-4aab-8abf-a83f71105cae'
+SCRAPEOPS_PROXY_ENABLED = True
 
-# EXTENSIONS = {
-# 'scrapeops_scrapy.extension.ScrapeOpsMonitor': 500, 
-# }
+EXTENSIONS = {
+'scrapeops_scrapy.extension.ScrapeOpsMonitor': 500, 
+}
 
-# DOWNLOADER_MIDDLEWARES = {
-#     'scrapeops_scrapy_proxy_sdk.scrapeops_scrapy_proxy_sdk.ScrapeOpsScrapyProxySdk': 725,
-#     'scrapeops_scrapy.middleware.retry.RetryMiddleware': 550,
-#     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    'scrapeops_scrapy_proxy_sdk.scrapeops_scrapy_proxy_sdk.ScrapeOpsScrapyProxySdk': 725,
+    'scrapeops_scrapy.middleware.retry.RetryMiddleware': 550,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+}
 
 
 
